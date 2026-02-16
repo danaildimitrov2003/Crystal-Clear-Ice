@@ -3,10 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import './Home.css';
 
+const profilePics = [
+  '/profilePics/banana.png',
+  '/profilePics/chicken qnis.png',
+  '/profilePics/exeter.png',
+  '/profilePics/frosty-1.svg',
+  '/profilePics/katerichok.png',
+  '/profilePics/krasimir.png',
+  '/profilePics/logo.png',
+  '/profilePics/ludacris.png',
+  '/profilePics/nikshata.png',
+  '/profilePics/pameca.png',
+  '/profilePics/pepi.png',
+  '/profilePics/polizei.png',
+  '/profilePics/shoebill.png',
+  '/profilePics/spike.png',
+  '/profilePics/teterev.png',
+  '/profilePics/tony.png',
+  '/profilePics/torbio.png'
+];
+
 export default function Home() {
   const [name, setName] = useState('');
+  const [selectedPicIndex, setSelectedPicIndex] = useState(0);
   const { joinAsPlayer, isLoading, error } = useGameStore();
   const navigate = useNavigate();
+
+  const goPrevPic = () => {
+    if (profilePics.length === 0) return;
+    setSelectedPicIndex((prev) => (prev - 1 + profilePics.length) % profilePics.length);
+  };
+
+  const goNextPic = () => {
+    if (profilePics.length === 0) return;
+    setSelectedPicIndex((prev) => (prev + 1) % profilePics.length);
+  };
 
   const handlePlay = async (isGuest = true) => {
     if (!name.trim()) return;
@@ -39,7 +70,28 @@ export default function Home() {
           <div className="home-card card animate-fade-in">
             <h2 className="card-title">Quick Play</h2>
             <div className="guest-avatar">
-              <img src="/logo.png" alt="Guest" className="card-logo" />
+              <button
+                className="avatar-arrow"
+                onClick={goPrevPic}
+                aria-label="Previous profile picture"
+                type="button"
+              >
+                ‹
+              </button>
+              <img
+                key={profilePics[selectedPicIndex] || '/logo.png'}
+                src={profilePics[selectedPicIndex] || '/logo.png'}
+                alt="Selected character"
+                className="card-logo shake-hello"
+              />
+              <button
+                className="avatar-arrow"
+                onClick={goNextPic}
+                aria-label="Next profile picture"
+                type="button"
+              >
+                ›
+              </button>
             </div>
             <p className="card-description">Jump right in as a guest player</p>
           </div>

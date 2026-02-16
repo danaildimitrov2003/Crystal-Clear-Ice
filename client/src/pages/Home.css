@@ -95,13 +95,40 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 14px;
   margin: 20px 0;
+}
+
+.avatar-arrow {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.4);
+  color: #0b1f2a;
+  font-size: 1.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.avatar-arrow:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .card-logo {
   width: 150px;
   height: auto;
   filter: drop-shadow(0 4px 20px rgba(78, 205, 196, 0.2));
+}
+
+.shake-hello {
+  animation: helloShake 2.8s ease-in-out 1s infinite;
+  transform-origin: 50% 70%;
 }
 
 .card-description {
@@ -184,6 +211,30 @@
   }
 }
 
+@keyframes helloShake {
+  0%, 34% {
+    transform: rotate(0deg);
+  }
+  38% {
+    transform: rotate(-8deg);
+  }
+  42% {
+    transform: rotate(8deg);
+  }
+  46% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+  54% {
+    transform: rotate(-3deg);
+  }
+  58%, 100% {
+    transform: rotate(0deg);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .home-grid {
@@ -193,10 +244,6 @@
   
   .home-card {
     min-height: auto;
-  }
-  
-  .guest-avatar, .card-logo {
-    display: none;
   }
   
   .header-logo {
