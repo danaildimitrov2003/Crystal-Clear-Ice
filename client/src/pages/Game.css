@@ -1,0 +1,327 @@
+.game-page {
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.game-content {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 40px);
+}
+
+/* Timer styles */
+.game-timer {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.game-timer.warning {
+  color: var(--impostor-red);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Phase container */
+.phase-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Role reveal styles */
+.role-reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.role-text {
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.role-name {
+  font-weight: 700;
+  font-size: 2.2rem;
+}
+
+.role-name.impostor {
+  color: var(--impostor-red);
+}
+
+.role-name.detective {
+  color: var(--detective-blue);
+}
+
+/* Theme/Word reveal */
+.reveal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.reveal-label {
+  font-size: 1.3rem;
+  color: var(--text-dark);
+}
+
+.reveal-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--warning-yellow);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 12px 32px;
+  background: var(--frost-glass);
+  border-radius: 16px;
+}
+
+/* Clue submission */
+.clue-submission {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.current-player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.turn-indicator {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+.clue-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.clue-hint {
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--text-dark);
+  opacity: 0.8;
+}
+
+.clues-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.clue-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.clue-item .player-name {
+  font-weight: 600;
+  min-width: 100px;
+}
+
+.clue-item .clue-text {
+  flex: 1;
+  font-style: italic;
+}
+
+/* Discussion */
+.discussion-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.discussion-title {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+}
+
+.discussion-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Voting */
+.voting-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.voting-title {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+}
+
+.voting-instruction {
+  color: var(--impostor-red);
+  font-weight: 500;
+}
+
+.voting-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.vote-player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.vote-player-card:hover:not(.disabled):not(.self) {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.vote-player-card.selected {
+  background: var(--impostor-red);
+  border-color: var(--impostor-red);
+}
+
+.vote-player-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vote-player-card.self {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.vote-player-card.voted {
+  border-color: var(--detective-blue);
+}
+
+.voted-badge {
+  font-size: 0.75rem;
+  color: var(--detective-blue);
+}
+
+/* Vote results */
+.vote-results-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.votes-visualization {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.votes-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.voter-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.voter-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.vote-arrow {
+  font-size: 2rem;
+  color: var(--text-dark);
+}
+
+.voted-for-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Game over */
+.game-over-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.result-message {
+  font-size: 1.3rem;
+  color: var(--text-dark);
+}
+
+.result-highlight {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.result-highlight.correct {
+  color: var(--detective-blue);
+}
+
+.result-highlight.wrong {
+  color: var(--impostor-red);
+}
+
+.impostor-reveal {
+  font-size: 1.2rem;
+  margin-top: 16px;
+}
+
+.game-over-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+}

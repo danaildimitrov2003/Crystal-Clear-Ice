@@ -1,0 +1,168 @@
+.join-page {
+  align-items: stretch;
+  padding: 20px;
+}
+
+.join-content {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 0;
+  align-self: flex-start;
+  transition: opacity 0.3s;
+}
+
+.back-btn:hover {
+  opacity: 0.7;
+}
+
+.join-title {
+  text-align: center;
+  font-size: 1.8rem;
+  color: var(--text-dark);
+}
+
+.join-code-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.join-code-section h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.code-input-group {
+  display: flex;
+  gap: 12px;
+}
+
+.code-input {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.lobby-search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar .input {
+  padding-right: 40px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.lobbies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.lobby-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lobby-item:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateX(5px);
+}
+
+.lobby-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lobby-name {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.lobby-players {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.lock-icon {
+  font-size: 1.2rem;
+}
+
+.no-lobbies {
+  text-align: center;
+  padding: 40px 20px;
+  opacity: 0.7;
+}
+
+.no-lobbies .hint {
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal h3 {
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-buttons .btn {
+  flex: 1;
+}

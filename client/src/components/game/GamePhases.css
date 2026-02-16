@@ -1,0 +1,68 @@
+/* Shared game phase styles */
+.role-hint, .hint-text, .waiting-text {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  opacity: 0.8;
+  text-align: center;
+}
+
+.role-reveal .avatar {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.impostor-hint {
+  background: var(--impostor-red) !important;
+  color: white;
+}
+
+.clues-list h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.self-badge {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.vote-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--impostor-red);
+}
+
+.word-reveal-final {
+  margin-top: 16px;
+  padding: 16px 24px;
+  background: var(--frost-glass);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.word-reveal-final p {
+  margin: 4px 0;
+}
+
+.word-reveal-final strong {
+  color: var(--warning-yellow);
+}
+
+@media (max-width: 600px) {
+  .game-timer {
+    font-size: 2rem;
+  }
+  
+  .role-name {
+    font-size: 1.8rem;
+  }
+  
+  .reveal-value {
+    font-size: 1.8rem;
+    padding: 10px 20px;
+  }
+  
+  .voting-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

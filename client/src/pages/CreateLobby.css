@@ -1,0 +1,136 @@
+.create-page {
+  align-items: center;
+  padding: 20px;
+}
+
+.create-content {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 0;
+  align-self: flex-start;
+  transition: opacity 0.3s;
+}
+
+.back-btn:hover {
+  opacity: 0.7;
+}
+
+.create-title {
+  text-align: center;
+  font-size: 1.8rem;
+  color: var(--text-dark);
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.password-row {
+  display: flex;
+  gap: 12px;
+}
+
+.password-row .input {
+  flex: 1;
+}
+
+.lock-toggle {
+  width: 50px;
+  height: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: var(--frost-glass);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-toggle:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.lock-toggle.active {
+  background: var(--ice-dark);
+  border-color: var(--ice-deep);
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.slider-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: var(--frost-glass);
+  border-radius: 4px;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: var(--ice-dark);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: var(--ice-dark);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.create-btn {
+  margin-top: 8px;
+}
