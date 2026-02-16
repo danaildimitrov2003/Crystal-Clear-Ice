@@ -172,38 +172,6 @@
   margin: 0;
 }
 
-/* Ice decorations */
-.ice-decoration {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.ice-1 {
-  width: 400px;
-  height: 400px;
-  top: -150px;
-  right: -150px;
-  animation: float 8s ease-in-out infinite;
-}
-
-.ice-2 {
-  width: 300px;
-  height: 300px;
-  bottom: -100px;
-  left: -100px;
-  animation: float 6s ease-in-out infinite reverse;
-}
-
-.ice-3 {
-  width: 200px;
-  height: 200px;
-  top: 50%;
-  left: 5%;
-  animation: float 10s ease-in-out infinite;
-}
 
 @keyframes float {
   0%, 100% {
