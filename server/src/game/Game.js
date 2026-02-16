@@ -253,17 +253,43 @@ class Game {
   }
 
   startRound() {
+    // Select new random word and category
+    const { category, word } = getRandomCategoryAndWord();
+    this.category = category;
+    this.word = word;
+
+    // Reset all player state
+    this.players.forEach(player => {
+      player.clue = null;
+      player.vote = null;
+      player.votesReceived = 0;
+      player.role = null;
+    });
+
+    // Assign new roles - one random impostor
+    const impostorIndex = Math.floor(Math.random() * this.players.length);
+    this.players[impostorIndex].role = 'impostor';
+    
+    this.players.forEach((player, index) => {
+      if (index !== impostorIndex) {
+        player.role = 'detective';
+      }
+    });
+    
+    this.impostorId = this.players[impostorIndex].id;
+
+    // Randomize turn order
+    this.players = this.shuffleArray([...this.players]);
+    
     this.round++;
     this.currentPlayerIndex = 0;
     this.clues = [];
     this.votes = {};
-    this.players.forEach(p => {
-      p.clue = null;
-      p.vote = null;
-      p.votesReceived = 0;
-    });
 
-    this.phase = GAME_PHASES.THEME_REVEAL;
+    this.phase = GAME_PHASES.ROLE_REVEAL;
+    this.phaseEndTime = null;
+    this.phaseTimer = null;
+    
     return this.getState();
   }
 }

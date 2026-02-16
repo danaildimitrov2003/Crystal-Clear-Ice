@@ -209,9 +209,11 @@ function setupSocketHandlers(io, gameManager) {
 
       const newState = gameManager.startNewRound(session.lobbyId);
       if (newState) {
+        const updatedGame = gameManager.getGame(session.lobbyId);
         io.to(session.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
         emitPlayerStates(io, gameManager, session.lobbyId);
         startPhaseTimer(io, gameManager, session.lobbyId);
+        handleBotActions(io, gameManager, session.lobbyId, updatedGame);
       }
     });
 
