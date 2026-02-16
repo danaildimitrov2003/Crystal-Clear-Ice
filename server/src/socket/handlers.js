@@ -1,5 +1,13 @@
 const { GAME_PHASES, PHASE_DURATIONS } = require('../game/GameManager');
 
+const DEV_MODE = process.env.DEV_MODE === 'true';
+
+function resolveCallback(data, callback) {
+  if (typeof data === 'function') return data;
+  if (typeof callback === 'function') return callback;
+  return null;
+}
+
 function setupSocketHandlers(io, gameManager) {
   io.on('connection', (socket) => {
     console.log(`Client connected: ${socket.id}`);
@@ -8,7 +16,9 @@ function setupSocketHandlers(io, gameManager) {
     socket.on('player:join', ({ name, isGuest = true }, callback) => {
       const session = gameManager.createSession(socket.id, name, isGuest);
       console.log(`Player joined: ${name} (${session.id})`);
-      callback({ success: true, player: session });
+      if (typeof callback === 'function') {
+        callback({ success: true, player: session });
+      }
     });
 
     // Create a new lobby
@@ -18,7 +28,9 @@ function setupSocketHandlers(io, gameManager) {
         socket.join(result.lobby.id);
         console.log(`Lobby created: ${name} by ${socket.id}`);
       }
-      callback(result);
+      if (typeof callback === 'function') {
+        callback(result);
+      }
     });
 
     // Join a lobby by ID
@@ -29,7 +41,9 @@ function setupSocketHandlers(io, gameManager) {
         socket.to(result.lobby.id).emit('lobby:playerJoined', result.lobby);
         console.log(`Player joined lobby: ${lobbyId}`);
       }
-      callback(result);
+      if (typeof callback === 'function') {
+        callback(result);
+      }
     });
 
     // Join a lobby by code
@@ -40,11 +54,14 @@ function setupSocketHandlers(io, gameManager) {
         socket.to(result.lobby.id).emit('lobby:playerJoined', result.lobby);
         console.log(`Player joined lobby by code: ${code}`);
       }
-      callback(result);
+      if (typeof callback === 'function') {
+        callback(result);
+      }
     });
 
     // Leave lobby
-    socket.on('lobby:leave', (callback) => {
+    socket.on('lobby:leave', (data, callback) => {
+      const cb = resolveCallback(data, callback);
       const result = gameManager.leaveLobby(socket.id);
       if (result.success) {
         socket.leave(result.lobbyId);
@@ -53,37 +70,62 @@ function setupSocketHandlers(io, gameManager) {
         }
         console.log(`Player left lobby: ${result.lobbyId}`);
       }
-      if (callback) callback(result);
+      if (cb) cb(result);
     });
 
     // Get public lobbies
-    socket.on('lobbies:list', (callback) => {
+    socket.on('lobbies:list', (data, callback) => {
+      const cb = resolveCallback(data, callback);
       const lobbies = gameManager.getPublicLobbies();
-      callback({ success: true, lobbies });
+      if (cb) cb({ success: true, lobbies });
+    });
+
+    // Add bot to lobby (dev mode only)
+    socket.on('lobby:addBot', (data, callback) => {
+      const cb = resolveCallback(data, callback);
+      if (!DEV_MODE) {
+        if (cb) cb({ success: false, error: 'Bot creation only available in dev mode' });
+        return;
+      }
+
+      const session = gameManager.getSession(socket.id);
+      if (!session || !session.lobbyId) {
+        if (cb) cb({ success: false, error: 'Not in a lobby' });
+        return;
+      }
+
+      const result = gameManager.addBot(session.lobbyId);
+      if (result.success) {
+        io.to(session.lobbyId).emit('lobby:playerJoined', result.lobby);
+      }
+      if (cb) cb(result);
     });
 
     // Start game
-    socket.on('game:start', (callback) => {
+    socket.on('game:start', (data, callback) => {
+      const cb = resolveCallback(data, callback);
       const result = gameManager.startGame(socket.id);
       if (result.success) {
         io.to(result.lobbyId).emit('game:started', { phase: result.game.phase });
         
         // Send individual player states (with hidden info)
         const lobby = gameManager.lobbies.get(result.lobbyId);
+        const game = gameManager.games.get(lobby.gameId);
         lobby.players.forEach(player => {
           const playerSocket = Array.from(gameManager.playerSessions.entries())
             .find(([_, s]) => s.id === player.id);
           if (playerSocket) {
-            const playerState = gameManager.games.get(lobby.gameId).getPlayerState(player.id);
+            const playerState = game.getPlayerState(player.id);
             io.to(playerSocket[0]).emit('game:state', playerState);
           }
         });
 
-        // Auto advance phases
+        // Auto advance phases and handle bot actions
         startPhaseTimer(io, gameManager, result.lobbyId);
+        handleBotActions(io, gameManager, result.lobbyId, game);
         console.log(`Game started in lobby: ${result.lobbyId}`);
       }
-      callback(result);
+      if (cb) cb(result);
     });
 
     // Submit clue
@@ -105,6 +147,8 @@ function setupSocketHandlers(io, gameManager) {
             if (newState) {
               io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
               startPhaseTimer(io, gameManager, result.lobbyId);
+              const updatedGame = gameManager.getGame(result.lobbyId);
+              handleBotActions(io, gameManager, result.lobbyId, updatedGame);
             }
           }, 1000);
         } else {
@@ -113,7 +157,9 @@ function setupSocketHandlers(io, gameManager) {
           emitPlayerStates(io, gameManager, result.lobbyId);
         }
       }
-      callback(result);
+      if (typeof callback === 'function') {
+        callback(result);
+      }
     });
 
     // Submit vote
@@ -136,7 +182,9 @@ function setupSocketHandlers(io, gameManager) {
           startPhaseTimer(io, gameManager, result.lobbyId);
         }
       }
-      callback(result);
+      if (typeof callback === 'function') {
+        callback(result);
+      }
     });
 
     // Skip discussion
@@ -178,9 +226,10 @@ function setupSocketHandlers(io, gameManager) {
     });
 
     // Get current game state
-    socket.on('game:getState', (callback) => {
+    socket.on('game:getState', (data, callback) => {
+      const cb = resolveCallback(data, callback);
       const state = gameManager.getPlayerGameState(socket.id);
-      callback({ success: !!state, state });
+      if (cb) cb({ success: !!state, state });
     });
 
     // Disconnect
@@ -240,6 +289,16 @@ function startPhaseTimer(io, gameManager, lobbyId) {
         io.to(lobbyId).emit('game:phaseChanged', { phase: newState.phase });
         emitPlayerStates(io, gameManager, lobbyId);
       }
+
+      const updatedGame = gameManager.getGame(lobbyId);
+      handleBotActions(io, gameManager, lobbyId, updatedGame);
+      startPhaseTimer(io, gameManager, lobbyId);
+    } else if (newState && currentPhase === GAME_PHASES.CLUE_SUBMISSION) {
+      // In clue phase, timer can advance turn without changing phase.
+      // Keep players updated and continue timers for the next turn.
+      emitPlayerStates(io, gameManager, lobbyId);
+      const updatedGame = gameManager.getGame(lobbyId);
+      handleBotActions(io, gameManager, lobbyId, updatedGame);
       startPhaseTimer(io, gameManager, lobbyId);
     }
   }, duration);
@@ -258,6 +317,80 @@ function emitPlayerStates(io, gameManager, lobbyId) {
       io.to(playerSocket[0]).emit('game:state', playerState);
     }
   });
+}
+
+function handleBotActions(io, gameManager, lobbyId, game) {
+  const lobby = gameManager.lobbies.get(lobbyId);
+  if (!lobby || !game) return;
+
+  // Handle clue submission phase
+  if (game.phase === GAME_PHASES.CLUE_SUBMISSION) {
+    const currentPlayer = game.players[game.currentPlayerIndex];
+    if (currentPlayer && gameManager.isBot(currentPlayer.id)) {
+      const bot = gameManager.getBot(currentPlayer.id);
+      const isImpostor = currentPlayer.role === 'impostor';
+      
+      setTimeout(() => {
+        const clue = bot.generateClue(game.word, game.category, isImpostor);
+        const result = game.submitClue(currentPlayer.id, clue);
+        
+        if (result.success) {
+          io.to(lobbyId).emit('game:clueSubmitted', {
+            clues: game.clues,
+            currentPlayerIndex: game.currentPlayerIndex,
+            currentPlayerId: game.currentPlayerId
+          });
+
+          // Check if we need to advance or let next bot play
+          if (game.currentPlayerIndex >= game.players.length - 1) {
+            setTimeout(() => {
+              const newState = gameManager.advanceGamePhase(lobbyId);
+              if (newState) {
+                io.to(lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+                startPhaseTimer(io, gameManager, lobbyId);
+              }
+            }, 1000);
+          } else {
+            gameManager.advanceGamePhase(lobbyId);
+            emitPlayerStates(io, gameManager, lobbyId);
+            handleBotActions(io, gameManager, lobbyId, game);
+          }
+        }
+      }, 2000);
+    }
+  }
+
+  // Handle voting phase
+  if (game.phase === GAME_PHASES.VOTING) {
+    lobby.players.forEach(player => {
+      if (gameManager.isBot(player.id) && !player.vote) {
+        const bot = gameManager.getBot(player.id);
+        
+        setTimeout(() => {
+          const votedForId = bot.chooseVoteTarget(game.players, game.impostorId);
+          if (votedForId) {
+            const result = game.submitVote(player.id, votedForId);
+            
+            if (result.success) {
+              io.to(lobbyId).emit('game:voteSubmitted', {
+                playersVoted: game.players.filter(p => p.hasVoted).map(p => p.id)
+              });
+
+              if (game.allVotesSubmitted()) {
+                const newState = gameManager.advanceGamePhase(lobbyId);
+                const voteResults = gameManager.getVoteResults(lobbyId);
+                io.to(lobbyId).emit('game:phaseChanged', { 
+                  phase: newState.phase,
+                  voteResults
+                });
+                startPhaseTimer(io, gameManager, lobbyId);
+              }
+            }
+          }
+        }, 2000);
+      }
+    });
+  }
 }
 
 module.exports = { setupSocketHandlers };

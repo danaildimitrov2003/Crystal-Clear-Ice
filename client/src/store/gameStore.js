@@ -122,6 +122,17 @@ export const useGameStore = create((set, get) => ({
     }
   },
 
+  // Add bot (dev mode only)
+  addBot: async () => {
+    try {
+      const response = await emitWithCallback('lobby:addBot', {});
+      return response;
+    } catch (error) {
+      set({ error: error.message });
+      throw error;
+    }
+  },
+
   // Submit clue
   submitClue: async (clue) => {
     try {

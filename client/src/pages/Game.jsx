@@ -100,6 +100,24 @@ export default function Game() {
   return (
     <div className="game-page page-container">
       <div className="game-content animate-fade-in">
+        {gameState.phase !== GAME_PHASES.ROLE_REVEAL && (
+          <div className="game-info-bar card">
+            <div className="game-info-item">
+              <span className="game-info-label">Category</span>
+              <span className="game-info-value">{gameState.category || 'Unknown'}</span>
+            </div>
+            <div className="game-info-item">
+              <span className="game-info-label">Word</span>
+              <span className="game-info-value">
+                {gameState.myRole === 'impostor' ? '???' : (gameState.word || 'Unknown')}
+              </span>
+            </div>
+            <div className="game-info-item">
+              <span className="game-info-label">Round</span>
+              <span className="game-info-value">{gameState.round}</span>
+            </div>
+          </div>
+        )}
         {renderPhase()}
       </div>
     </div>

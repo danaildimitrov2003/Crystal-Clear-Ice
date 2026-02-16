@@ -262,12 +262,7 @@ class Game {
       p.vote = null;
       p.votesReceived = 0;
     });
-    
-    // Get new word for new round
-    const { category, word } = getRandomCategoryAndWord();
-    this.category = category;
-    this.word = word;
-    
+
     this.phase = GAME_PHASES.THEME_REVEAL;
     return this.getState();
   }

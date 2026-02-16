@@ -21,7 +21,7 @@ export default function WordReveal({ word, isImpostor }) {
       ) : (
         <>
           <p className="reveal-label">The word is</p>
-          <div className="reveal-value">
+          <div className="reveal-value detective-word-value">
             "{word?.charAt(0).toUpperCase() + word?.slice(1)}"
           </div>
         </>

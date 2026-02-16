@@ -30,8 +30,26 @@
   color: var(--text-dark);
 }
 
+.lobby-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .start-btn {
   min-width: 150px;
+}
+
+.add-bot-btn {
+  min-width: 120px;
+  background: rgba(129, 212, 250, 0.2);
+  border: 2px solid rgba(129, 212, 250, 0.4);
+  color: var(--text-dark);
+}
+
+.add-bot-btn:hover:not(:disabled) {
+  background: rgba(129, 212, 250, 0.3);
+  border-color: rgba(129, 212, 250, 0.6);
 }
 
 .lobby-code {

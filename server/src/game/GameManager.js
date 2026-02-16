@@ -1,11 +1,13 @@
 const { Lobby } = require('./Lobby');
 const { Game, GAME_PHASES, PHASE_DURATIONS } = require('./Game');
+const { BotPlayer } = require('./BotPlayer');
 
 class GameManager {
   constructor() {
     this.lobbies = new Map();
     this.games = new Map();
     this.playerSessions = new Map(); // socketId -> { playerId, lobbyId }
+    this.bots = new Map(); // botId -> BotPlayer
   }
 
   // Session management
@@ -242,6 +244,41 @@ class GameManager {
       this.games.delete(lobby.gameId);
       lobby.gameId = null;
     }
+  }
+
+  // Bot management
+  addBot(lobbyId) {
+    const lobby = this.lobbies.get(lobbyId);
+    if (!lobby) {
+      return { success: false, error: 'Lobby not found' };
+    }
+
+    if (lobby.players.length >= lobby.maxPlayers) {
+      return { success: false, error: 'Lobby is full' };
+    }
+
+    const bot = new BotPlayer(this.bots.size, lobbyId);
+    this.bots.set(bot.id, bot);
+    
+    const result = lobby.addPlayer(bot);
+    if (!result.success) {
+      this.bots.delete(bot.id);
+      return result;
+    }
+
+    return { success: true, bot, lobby: lobby.getFullInfo() };
+  }
+
+  isBot(playerId) {
+    return this.bots.has(playerId);
+  }
+
+  getBot(playerId) {
+    return this.bots.get(playerId);
+  }
+
+  removeBot(botId) {
+    this.bots.delete(botId);
   }
 }
 

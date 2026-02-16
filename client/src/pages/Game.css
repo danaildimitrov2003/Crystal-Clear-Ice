@@ -14,6 +14,39 @@
   min-height: calc(100vh - 40px);
 }
 
+.game-info-bar {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.game-info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.game-info-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  color: var(--text-dark);
+}
+
+.game-info-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0b1f2a;
+  text-align: center;
+  word-break: break-word;
+}
+
 /* Timer styles */
 .game-timer {
   font-size: 2.5rem;
@@ -60,7 +93,8 @@
 }
 
 .role-name.detective {
-  color: var(--detective-blue);
+  color: #0b1f2a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 /* Theme/Word reveal */
@@ -85,6 +119,14 @@
   padding: 12px 32px;
   background: var(--frost-glass);
   border-radius: 16px;
+  animation: revealSpinIn 650ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.detective-word-value {
+  color: #0b1f2a !important;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid rgba(78, 205, 196, 0.55);
+  text-shadow: none;
 }
 
 /* Clue submission */
@@ -324,4 +366,25 @@
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 24px;
+}
+
+@keyframes revealSpinIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-16deg) scale(0.78);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(4deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@media (max-width: 700px) {
+  .game-info-bar {
+    grid-template-columns: 1fr;
+  }
 }

@@ -5,7 +5,8 @@ import './Lobby.css';
 
 export default function Lobby() {
   const navigate = useNavigate();
-  const { player, lobby, gameState, leaveLobby, startGame, isLoading, error } = useGameStore();
+  const { player, lobby, gameState, leaveLobby, startGame, addBot, isLoading, error } = useGameStore();
+  const isDev = import.meta.env.DEV;
 
   useEffect(() => {
     if (!lobby) {
@@ -32,6 +33,14 @@ export default function Lobby() {
     }
   };
 
+  const handleAddBot = async () => {
+    try {
+      await addBot();
+    } catch (err) {
+      console.error('Failed to add bot:', err);
+    }
+  };
+
   const isHost = player?.id === lobby?.hostId;
   const minPlayers = import.meta.env.DEV ? 1 : 3;
   const canStart = lobby?.players?.length >= minPlayers;
@@ -44,15 +53,26 @@ export default function Lobby() {
         <div className="lobby-header card">
           <div className="lobby-title-row">
             <h2 className="lobby-name">{lobby.name}</h2>
-            {isHost && (
-              <button 
-                className="btn btn-primary start-btn"
-                onClick={handleStart}
-                disabled={!canStart || isLoading}
-              >
-                {isLoading ? 'Starting...' : 'Start Game'}
-              </button>
-            )}
+            <div className="lobby-actions">
+              {isDev && isHost && lobby.players.length < lobby.maxPlayers && (
+                <button 
+                  className="btn btn-secondary add-bot-btn"
+                  onClick={handleAddBot}
+                  disabled={isLoading}
+                >
+                  Add Bot
+                </button>
+              )}
+              {isHost && (
+                <button 
+                  className="btn btn-primary start-btn"
+                  onClick={handleStart}
+                  disabled={!canStart || isLoading}
+                >
+                  {isLoading ? 'Starting...' : 'Start Game'}
+                </button>
+              )}
+            </div>
           </div>
           <div className="lobby-code">
             Code: <span className="code-value">{lobby.code}</span>
