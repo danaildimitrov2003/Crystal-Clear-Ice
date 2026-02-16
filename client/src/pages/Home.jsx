@@ -93,11 +93,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* Background decorations */}
-      <div className="ice-decoration ice-1"></div>
-      <div className="ice-decoration ice-2"></div>
-      <div className="ice-decoration ice-3"></div>
     </div>
   );
 }
