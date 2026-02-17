@@ -4,8 +4,31 @@ import { useGameStore } from '../store/gameStore';
 import { profilePics } from '../constants/profilePics';
 import './Home.css';
 
+const NAME_COOKIE_KEY = 'cci_player_name';
+
+const getSavedNameFromCookie = () => {
+  if (typeof document === 'undefined') return '';
+
+  const cookie = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(`${NAME_COOKIE_KEY}=`));
+
+  if (!cookie) return '';
+
+  try {
+    return decodeURIComponent(cookie.split('=').slice(1).join('='));
+  } catch {
+    return '';
+  }
+};
+
+const saveNameToCookie = (value) => {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${NAME_COOKIE_KEY}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
+};
+
 export default function Home() {
-  const [name, setName] = useState('');
+  const [name, setName] = useState(() => getSavedNameFromCookie());
   const [selectedPicIndex, setSelectedPicIndex] = useState(() => {
     if (profilePics.length === 0) return 0;
     return Math.floor(Math.random() * profilePics.length);
@@ -77,6 +100,12 @@ export default function Home() {
     }
   };
 
+  const handleNameChange = (e) => {
+    const nextName = e.target.value;
+    setName(nextName);
+    saveNameToCookie(nextName);
+  };
+
   // ─── Invite Join Layout ───
   if (inviteCode) {
     return (
@@ -128,7 +157,7 @@ export default function Home() {
                   className="input play-input"
                   placeholder="Your nickname"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={handleNameChange}
                   onKeyPress={handleKeyPress}
                   maxLength={20}
                   autoFocus
@@ -228,7 +257,7 @@ export default function Home() {
                 className="input play-input"
                 placeholder="Your nickname"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={handleNameChange}
                 onKeyPress={handleKeyPress}
                 maxLength={20}
                 autoFocus
