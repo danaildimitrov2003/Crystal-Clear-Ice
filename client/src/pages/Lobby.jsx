@@ -344,10 +344,11 @@ export default function Lobby() {
                           placeholder="Category name"
                         />
                         <button 
-                          className="btn btn-small btn-danger"
+                          className="btn btn-small btn-danger btn-icon"
                           onClick={() => removeCategory(categoryName)}
+                          title="Remove category"
                         >
-                          Remove Category
+                          ×
                         </button>
                       </div>
 
@@ -362,10 +363,11 @@ export default function Lobby() {
                               placeholder={`Word ${idx + 1}`}
                             />
                             <button
-                              className="btn btn-small btn-danger"
+                              className="btn btn-small btn-danger btn-icon"
                               onClick={() => removeWordFromCategory(categoryName, idx)}
+                              title="Remove word"
                             >
-                              Remove
+                              ×
                             </button>
                           </div>
                         ))}
