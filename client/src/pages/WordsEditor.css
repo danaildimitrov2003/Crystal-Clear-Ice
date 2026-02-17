@@ -67,6 +67,12 @@
   margin-bottom: 24px;
 }
 
+.words-table-container > .btn {
+  display: flex;
+  margin-left: auto;
+  margin-bottom: 16px;
+}
+
 .no-words {
   text-align: center;
   color: #000 !important;
@@ -98,8 +104,8 @@
   border: 2px solid rgba(255, 255, 255, 0.4) !important;
   border-radius: 8px;
   color: #000 !important;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 1.3rem;
   font-family: 'Papyrus', fantasy, sans-serif !important;
 }
 
@@ -169,6 +175,7 @@
   display: flex;
   gap: 12px;
   justify-content: center;
+  padding-bottom: 20px;
 }
 
 .words-editor-actions .btn {
