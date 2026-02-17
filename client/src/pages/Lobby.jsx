@@ -170,8 +170,8 @@ export default function Lobby() {
   const addCategory = () => {
     const newCategoryName = `category${Object.keys(editableWords).length + 1}`;
     setEditableWords(prev => ({
-      ...prev,
-      [newCategoryName]: ['']
+      [newCategoryName]: [''],
+      ...prev
     }));
   };
 
@@ -343,7 +343,7 @@ export default function Lobby() {
                   Export JSON
                 </button>
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                   onClick={saveWords}
                 >
                   Save Words
@@ -356,16 +356,15 @@ export default function Lobby() {
                 </button>
               </div>
 
-              <div className="words-editor-footer">
+
+
+              <div className="words-table-container">
                 <button
                   className="btn btn-secondary"
                   onClick={addCategory}
                 >
                   + Add Category
                 </button>
-              </div>
-
-              <div className="words-table-container">
                 {Object.entries(editableWords).length === 0 ? (
                   <p className="no-words">No words yet. Add a category to start.</p>
                 ) : (
@@ -380,10 +379,11 @@ export default function Lobby() {
                           placeholder="Category name"
                         />
                         <button 
-                          className="btn btn-small btn-danger"
+                          className="btn btn-small btn-danger btn-icon"
                           onClick={() => removeCategory(categoryName)}
+                          title="Remove category"
                         >
-                          Remove Category
+                          ×
                         </button>
                       </div>
 
@@ -398,10 +398,11 @@ export default function Lobby() {
                               placeholder={`Word ${idx + 1}`}
                             />
                             <button
-                              className="btn btn-small btn-danger"
+                              className="btn btn-small btn-danger btn-icon"
                               onClick={() => removeWordFromCategory(categoryName, idx)}
+                              title="Remove word"
                             >
-                              Remove
+                              ×
                             </button>
                           </div>
                         ))}
@@ -419,7 +420,7 @@ export default function Lobby() {
               </div>
 
               <button
-                className="back-to-top-btn"
+                className="btn btn-secondary back-to-top-btn"
                 onClick={scrollToTop}
                 title="Scroll back to top"
               >

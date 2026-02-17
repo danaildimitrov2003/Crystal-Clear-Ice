@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3) !important;
+  background: rgba(26, 95, 122, 0.4) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,10 +14,10 @@
 }
 
 .words-editor-content {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  background: var(--frost-glass) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 16px;
   padding: 28px;
   max-width: 800px;
@@ -33,12 +33,12 @@
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .words-editor-header h2 {
   font-size: 1.8rem;
-  color: #000 !important;
+  color: var(--text-dark) !important;
   margin: 0;
   font-family: 'Papyrus', fantasy, sans-serif !important;
 }
@@ -47,7 +47,7 @@
   background: none;
   border: none;
   font-size: 2rem;
-  color: #000 !important;
+  color: var(--text-dark) !important;
   cursor: pointer;
   padding: 0;
   width: 40px;
@@ -60,16 +60,22 @@
 
 .close-btn:hover {
   transform: scale(1.2);
-  color: #000 !important;
+  color: var(--text-dark) !important;
 }
 
 .words-table-container {
   margin-bottom: 24px;
 }
 
+.words-table-container > .btn {
+  display: flex;
+  margin-left: auto;
+  margin-bottom: 16px;
+}
+
 .no-words {
   text-align: center;
-  color: #000 !important;
+  color: var(--text-dark) !important;
   opacity: 0.7;
   padding: 20px;
   font-style: italic;
@@ -77,8 +83,8 @@
 }
 
 .category-section {
-  background: rgba(255, 255, 255, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background: rgba(128, 222, 234, 0.15) !important;
+  border: 2px solid rgba(77, 208, 225, 0.3) !important;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
@@ -94,19 +100,19 @@
 .category-input {
   flex: 1;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.6) !important;
-  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border: 2px solid rgba(128, 222, 234, 0.4) !important;
   border-radius: 8px;
-  color: #000 !important;
-  font-weight: 600;
-  font-size: 1rem;
+  color: var(--text-dark) !important;
+  font-weight: 500;
+  font-size: 1.3rem;
   font-family: 'Papyrus', fantasy, sans-serif !important;
 }
 
 .category-input:focus {
   outline: none;
-  border-color: rgba(78, 205, 196, 0.8) !important;
-  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: var(--ice-medium) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
 }
 
 .words-list {
@@ -125,18 +131,18 @@
 .word-input {
   flex: 1;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border: 2px solid rgba(128, 222, 234, 0.3) !important;
   border-radius: 6px;
-  color: #000 !important;
+  color: var(--text-dark) !important;
   font-size: 0.95rem;
   font-family: 'Papyrus', fantasy, sans-serif !important;
 }
 
 .word-input:focus {
   outline: none;
-  border-color: rgba(78, 205, 196, 0.8) !important;
-  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: var(--ice-medium) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
 }
 
 .btn-small {
@@ -157,6 +163,20 @@
   border-color: rgba(255, 107, 107, 0.6);
 }
 
+.btn-icon {
+  padding: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 8px;
+  font-size: 2rem !important;
+  font-weight: 300;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0 !important;
+}
+
 .words-editor-footer {
   display: flex;
   justify-content: center;
@@ -169,6 +189,7 @@
   display: flex;
   gap: 12px;
   justify-content: center;
+  padding-bottom: 20px;
 }
 
 .words-editor-actions .btn {

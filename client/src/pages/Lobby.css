@@ -171,6 +171,10 @@
   align-self: center;
 }
 
+.back-to-top-btn {
+  align-self: center;
+}
+
 @media (max-width: 600px) {
   .players-grid {
     grid-template-columns: repeat(2, 1fr);
