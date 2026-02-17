@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { getWordCategories } = require('../data/words');
 
 class Lobby {
   constructor(name, hostId, hostName, maxPlayers = 10, password = null) {
@@ -12,6 +13,8 @@ class Lobby {
     this.players = [];
     this.gameId = null;
     this.createdAt = new Date();
+    this.customWords = null;
+    this.currentWords = getWordCategories();
   }
 
   generateCode() {
@@ -88,7 +91,9 @@ class Lobby {
       ...this.getPublicInfo(),
       hostId: this.hostId,
       players: this.players,
-      gameId: this.gameId
+      gameId: this.gameId,
+      currentWords: this.currentWords,
+      customWords: this.customWords
     };
   }
 }

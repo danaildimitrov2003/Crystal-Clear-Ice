@@ -125,9 +125,13 @@ function setupSocketHandlers(io, gameManager) {
           throw new Error('Invalid word data format');
         }
 
-        // Store custom words in lobby
+        // Store custom words in lobby and update current words
         lobby.customWords = wordData;
+        lobby.currentWords = wordData;
         console.log(`Custom words uploaded to lobby ${session.lobbyId}`);
+        
+        // Broadcast the updated lobby to all players
+        io.to(session.lobbyId).emit('lobby:updated', lobby.getFullInfo());
         
         if (typeof callback === 'function') {
           callback({ success: true, message: 'Words uploaded successfully' });

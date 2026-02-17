@@ -42,21 +42,41 @@
 
 .upload-btn {
   min-width: 130px;
-  background: rgba(255, 193, 7, 0.2);
-  border: 2px solid rgba(255, 193, 7, 0.4);
+  background: rgba(255, 193, 7, 0.3);
+  border: 2px solid rgba(255, 193, 7, 0.6);
   color: var(--text-dark);
+  font-weight: 600;
 }
 
 .upload-btn:hover:not(:disabled) {
-  background: rgba(255, 193, 7, 0.3);
-  border-color: rgba(255, 193, 7, 0.6);
+  background: rgba(255, 193, 7, 0.4);
+  border-color: rgba(255, 193, 7, 0.8);
+}
+
+.show-words-btn {
+  min-width: 130px;
+  background: rgba(76, 175, 80, 0.3);
+  border: 2px solid rgba(76, 175, 80, 0.6);
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.show-words-btn:hover:not(:disabled) {
+  background: rgba(76, 175, 80, 0.4);
+  border-color: rgba(76, 175, 80, 0.8);
 }
 
 .add-bot-btn {
   min-width: 120px;
-  background: rgba(129, 212, 250, 0.2);
-  border: 2px solid rgba(129, 212, 250, 0.4);
+  background: rgba(129, 212, 250, 0.3);
+  border: 2px solid rgba(129, 212, 250, 0.6);
   color: var(--text-dark);
+  font-weight: 600;
+}
+
+.add-bot-btn:hover:not(:disabled) {
+  background: rgba(129, 212, 250, 0.4);
+  border-color: rgba(129, 212, 250, 0.8);
 }
 
 .add-bot-btn:hover:not(:disabled) {

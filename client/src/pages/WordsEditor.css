@@ -1,0 +1,204 @@
+/* Words Editor Modal */
+.words-editor-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.words-editor-content {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.words-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.words-editor-header h2 {
+  font-size: 1.8rem;
+  color: #000 !important;
+  margin: 0;
+  font-family: 'Papyrus', fantasy, sans-serif !important;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #000 !important;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.close-btn:hover {
+  transform: scale(1.2);
+  color: #000 !important;
+}
+
+.words-table-container {
+  margin-bottom: 24px;
+}
+
+.no-words {
+  text-align: center;
+  color: #000 !important;
+  opacity: 0.7;
+  padding: 20px;
+  font-style: italic;
+  font-family: 'Papyrus', fantasy, sans-serif !important;
+}
+
+.category-section {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.category-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.category-input {
+  flex: 1;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.6) !important;
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 8px;
+  color: #000 !important;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Papyrus', fantasy, sans-serif !important;
+}
+
+.category-input:focus {
+  outline: none;
+  border-color: rgba(78, 205, 196, 0.8) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.words-list {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.word-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.word-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 6px;
+  color: #000 !important;
+  font-size: 0.95rem;
+  font-family: 'Papyrus', fantasy, sans-serif !important;
+}
+
+.word-input:focus {
+  outline: none;
+  border-color: rgba(78, 205, 196, 0.8) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.btn-danger {
+  background: rgba(255, 107, 107, 0.2);
+  border: 2px solid rgba(255, 107, 107, 0.4);
+  color: var(--text-dark);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(255, 107, 107, 0.3);
+  border-color: rgba(255, 107, 107, 0.6);
+}
+
+.words-editor-footer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.words-editor-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.words-editor-actions .btn {
+  min-width: 130px;
+}
+
+@media (max-width: 600px) {
+  .words-editor-content {
+    max-width: 95vw;
+    padding: 20px;
+  }
+
+  .category-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-input {
+    margin-bottom: 8px;
+  }
+
+  .word-item {
+    flex-direction: column;
+  }
+
+  .words-editor-actions {
+    flex-direction: column;
+  }
+
+  .words-editor-actions .btn {
+    width: 100%;
+  }
+}

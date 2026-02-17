@@ -192,6 +192,10 @@ export const useGameStore = create((set, get) => ({
       set({ lobby });
     });
 
+    socket.on('lobby:updated', (lobby) => {
+      set({ lobby });
+    });
+
     // Game events
     socket.on('game:started', ({ phase }) => {
       set((state) => ({
