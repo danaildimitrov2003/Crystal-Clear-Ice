@@ -29,8 +29,8 @@ export default function CreateLobby() {
   return (
     <div className="create-page page-container">
       <div className="create-content animate-fade-in">
-        <button className="back-btn" onClick={() => navigate('/')}>
-          Back
+        <button className="back-btn" onClick={() => navigate('/menu')} aria-label="Back">
+          ←
         </button>
 
         <h2 className="create-title">Create a Lobby</h2>
@@ -64,7 +64,17 @@ export default function CreateLobby() {
                 onClick={() => setIsPrivate(!isPrivate)}
                 title={isPrivate ? 'Private lobby' : 'Public lobby'}
               >
-                {isPrivate ? 'L' : 'U'}
+                {isPrivate ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 9.2-1"></path>
+                  </svg>
+                )}
               </button>
             </div>
           </div>

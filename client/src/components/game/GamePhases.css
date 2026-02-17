@@ -10,6 +10,62 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
+.role-reveal {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.role-reveal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.role-particles {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.role-particle {
+  position: absolute;
+  top: -10%;
+  left: var(--particle-left);
+  font-size: clamp(1.8rem, 3.8vw, 3.4rem);
+  opacity: 0.9;
+  animation: devilFall var(--fall-duration) linear infinite;
+  animation-delay: var(--fall-delay);
+  will-change: transform, opacity;
+}
+
+.impostor-particle {
+  filter: drop-shadow(0 0 8px var(--impostor-red));
+}
+
+.detective-particle {
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+  opacity: 0.95;
+}
+
+@keyframes devilFall {
+  0% {
+    transform: translate3d(0, -20%, 0) rotate(0deg) scale(0.9);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(var(--drift), 120vh, 0) rotate(540deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
 .impostor-hint {
   background: var(--impostor-red) !important;
   color: white;
