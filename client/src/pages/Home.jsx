@@ -7,8 +7,17 @@ import './Home.css';
 export default function Home() {
   const [name, setName] = useState('');
   const [selectedPicIndex, setSelectedPicIndex] = useState(0);
+  const [isAudioOpen, setIsAudioOpen] = useState(false);
   const [searchParams] = useSearchParams();
-  const { player, joinAsPlayer, joinLobbyByCode, isLoading, error } = useGameStore();
+  const {
+    player,
+    joinAsPlayer,
+    joinLobbyByCode,
+    isLoading,
+    error,
+    effectsVolume,
+    setEffectsVolume
+  } = useGameStore();
   const navigate = useNavigate();
   const redirect = searchParams.get('redirect');
   const safeRedirect = redirect && redirect.startsWith('/') ? redirect : null;
@@ -71,6 +80,44 @@ export default function Home() {
     }
   };
 
+  const handleEffectsVolumeChange = (e) => {
+    setEffectsVolume(Number(e.target.value));
+  };
+
+  const effectsPercent = Math.round(effectsVolume * 100);
+
+  const toggleAudioPanel = () => {
+    setIsAudioOpen((prev) => !prev);
+  };
+
+  const renderAudioControl = () => (
+    <div className={`audio-control ${isAudioOpen ? 'open' : ''}`}>
+      <div className="audio-panel">
+        <span className="audio-control-value">{effectsPercent === 0 ? 'Muted' : `${effectsPercent}%`}</span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={effectsVolume}
+          onChange={handleEffectsVolumeChange}
+          className="audio-slider"
+          aria-label="Effects audio volume"
+        />
+      </div>
+
+      <button
+        type="button"
+        className="audio-icon-btn"
+        onClick={toggleAudioPanel}
+        aria-label="Toggle effects volume"
+        aria-expanded={isAudioOpen}
+      >
+        <span className="audio-icon-glyph" aria-hidden="true">🎧</span>
+      </button>
+    </div>
+  );
+
   // ─── Invite Join Layout ───
   if (inviteCode) {
     return (
@@ -79,6 +126,7 @@ export default function Home() {
           <img src="/logo.png" alt="Crystal Clear Ice" className="header-logo" />
           <h1 className="header-title title-font">Crystal Clear Ice</h1>
           <p className="header-subtitle">You've been invited to a game!</p>
+          {renderAudioControl()}
         </header>
 
         <div className="home-main">
@@ -167,6 +215,7 @@ export default function Home() {
         <img src="/logo.png" alt="Crystal Clear Ice" className="header-logo" />
         <h1 className="header-title title-font">Crystal Clear Ice</h1>
         <p className="header-subtitle">The Social Deduction Word Game</p>
+        {renderAudioControl()}
       </header>
 
       <div className="home-main">

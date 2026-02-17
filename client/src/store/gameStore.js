@@ -1,6 +1,20 @@
 import { create } from 'zustand';
 import { socket, connectSocket, emitWithCallback } from '../services/socket';
 
+const DEFAULT_EFFECTS_VOLUME = 0.8;
+
+const readStoredEffectsVolume = () => {
+  try {
+    const raw = localStorage.getItem('effectsVolume');
+    if (raw === null) return DEFAULT_EFFECTS_VOLUME;
+    const parsed = Number(raw);
+    if (Number.isNaN(parsed)) return DEFAULT_EFFECTS_VOLUME;
+    return Math.min(1, Math.max(0, parsed));
+  } catch {
+    return DEFAULT_EFFECTS_VOLUME;
+  }
+};
+
 export const GAME_PHASES = {
   WAITING: 'waiting',
   ROLE_REVEAL: 'role_reveal',
@@ -34,10 +48,20 @@ export const useGameStore = create((set, get) => ({
     devMode: false,
     minPlayers: 3
   },
+  effectsVolume: readStoredEffectsVolume(),
 
   // Actions
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+  setEffectsVolume: (volume) => {
+    const clamped = Math.min(1, Math.max(0, Number(volume)));
+    try {
+      localStorage.setItem('effectsVolume', String(clamped));
+    } catch {
+      // ignore persistence errors
+    }
+    set({ effectsVolume: clamped });
+  },
 
   ensureSession: async () => {
     const currentPlayer = get().player;
