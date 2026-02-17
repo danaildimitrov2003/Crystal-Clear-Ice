@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { profilePics, getProfilePic } from '../constants/profilePics';
 import './Lobby.css';
@@ -7,24 +7,30 @@ import './WordsEditor.css';
 
 export default function Lobby() {
   const navigate = useNavigate();
+  const { lobbyId } = useParams();
   const fileInputRef = useRef(null);
   const modalRef = useRef(null);
   const modalContentRef = useRef(null);
   const [uploadError, setUploadError] = useState(null);
   const [showWordsEditor, setShowWordsEditor] = useState(false);
   const [editableWords, setEditableWords] = useState({});
+  const [inviteCopied, setInviteCopied] = useState(false);
   const { player, lobby, gameState, leaveLobby, startGame, addBot, isLoading, error, uploadCustomWords, serverConfig } = useGameStore();
 
   useEffect(() => {
-    if (!lobby) {
-      navigate('/menu');
-      return;
-    }
-    
     if (gameState) {
       navigate('/game');
     }
-  }, [lobby, gameState, navigate]);
+  }, [gameState, navigate]);
+
+  // If not in a lobby, redirect home
+  useEffect(() => {
+    if (!lobby) {
+      navigate('/', { replace: true });
+    } else if (lobby.code !== lobbyId) {
+      navigate(`/lobby/${lobby.code}`, { replace: true });
+    }
+  }, [lobby, lobbyId, navigate]);
 
   // Handle click outside modal
   useEffect(() => {
@@ -42,7 +48,7 @@ export default function Lobby() {
 
   const handleLeave = async () => {
     await leaveLobby();
-    navigate('/menu');
+    navigate('/');
   };
 
   const handleStart = async () => {
@@ -59,6 +65,28 @@ export default function Lobby() {
       await addBot();
     } catch (err) {
       console.error('Failed to add bot:', err);
+    }
+  };
+
+  const handleInviteFriends = async () => {
+    if (!lobby?.id) return;
+    const inviteLink = `${window.location.origin}/lobby/${lobby.code}`;
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(inviteLink);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = inviteLink;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setInviteCopied(true);
+      setTimeout(() => setInviteCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy invite link:', err);
     }
   };
 
@@ -219,6 +247,13 @@ export default function Lobby() {
                   Show Words
                 </button>
               )}
+              <button
+                className="btn btn-secondary invite-btn"
+                onClick={handleInviteFriends}
+                disabled={isLoading}
+              >
+                {inviteCopied ? 'Copied!' : 'Invite Friends'}
+              </button>
               {isDevModeEnabled && isHost && lobby.players.length < lobby.maxPlayers && (
                 <button 
                   className="btn btn-secondary add-bot-btn"

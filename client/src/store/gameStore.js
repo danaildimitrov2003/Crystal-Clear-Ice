@@ -38,6 +38,28 @@ export const useGameStore = create((set, get) => ({
   // Actions
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+
+  ensureSession: async () => {
+    const currentPlayer = get().player;
+    if (!currentPlayer?.name) {
+      throw new Error('Please enter your nickname first');
+    }
+
+    connectSocket();
+    const response = await emitWithCallback('player:join', {
+      name: currentPlayer.name,
+      isGuest: currentPlayer.isGuest ?? true,
+      profilePicIndex: currentPlayer.profilePicIndex ?? 0
+    });
+
+    set({
+      player: response.player,
+      serverConfig: response.serverConfig || { devMode: false, minPlayers: 3 }
+    });
+
+    get().setupSocketListeners();
+    return response;
+  },
   
   // Join as player
   joinAsPlayer: async (name, isGuest = true, profilePicIndex = 0) => {
@@ -62,10 +84,22 @@ export const useGameStore = create((set, get) => ({
   createLobby: async (name, maxPlayers, password) => {
     set({ isLoading: true, error: null });
     try {
+      connectSocket();
       const response = await emitWithCallback('lobby:create', { name, maxPlayers, password });
       set({ lobby: response.lobby, isLoading: false });
       return response;
     } catch (error) {
+      if (error.message === 'Session not found' && get().player) {
+        try {
+          await get().ensureSession();
+          const retryResponse = await emitWithCallback('lobby:create', { name, maxPlayers, password });
+          set({ lobby: retryResponse.lobby, isLoading: false });
+          return retryResponse;
+        } catch (retryError) {
+          set({ error: retryError.message, isLoading: false });
+          throw retryError;
+        }
+      }
       set({ error: error.message, isLoading: false });
       throw error;
     }
@@ -75,10 +109,22 @@ export const useGameStore = create((set, get) => ({
   joinLobby: async (lobbyId, password) => {
     set({ isLoading: true, error: null });
     try {
+      connectSocket();
       const response = await emitWithCallback('lobby:join', { lobbyId, password });
       set({ lobby: response.lobby, isLoading: false });
       return response;
     } catch (error) {
+      if (error.message === 'Session not found' && get().player) {
+        try {
+          await get().ensureSession();
+          const retryResponse = await emitWithCallback('lobby:join', { lobbyId, password });
+          set({ lobby: retryResponse.lobby, isLoading: false });
+          return retryResponse;
+        } catch (retryError) {
+          set({ error: retryError.message, isLoading: false });
+          throw retryError;
+        }
+      }
       set({ error: error.message, isLoading: false });
       throw error;
     }
@@ -88,10 +134,22 @@ export const useGameStore = create((set, get) => ({
   joinLobbyByCode: async (code, password) => {
     set({ isLoading: true, error: null });
     try {
+      connectSocket();
       const response = await emitWithCallback('lobby:joinByCode', { code, password });
       set({ lobby: response.lobby, isLoading: false });
       return response;
     } catch (error) {
+      if (error.message === 'Session not found' && get().player) {
+        try {
+          await get().ensureSession();
+          const retryResponse = await emitWithCallback('lobby:joinByCode', { code, password });
+          set({ lobby: retryResponse.lobby, isLoading: false });
+          return retryResponse;
+        } catch (retryError) {
+          set({ error: retryError.message, isLoading: false });
+          throw retryError;
+        }
+      }
       set({ error: error.message, isLoading: false });
       throw error;
     }
@@ -110,6 +168,7 @@ export const useGameStore = create((set, get) => ({
   // Get lobbies
   fetchLobbies: async () => {
     try {
+      connectSocket();
       const response = await emitWithCallback('lobbies:list', {});
       set({ lobbies: response.lobbies });
     } catch (error) {
@@ -121,6 +180,7 @@ export const useGameStore = create((set, get) => ({
   startGame: async () => {
     set({ isLoading: true, error: null });
     try {
+      connectSocket();
       const response = await emitWithCallback('game:start', {});
       set({ isLoading: false });
       return response;
@@ -191,6 +251,17 @@ export const useGameStore = create((set, get) => ({
 
   // Setup socket listeners
   setupSocketListeners: () => {
+    socket.off('lobby:playerJoined');
+    socket.off('lobby:playerLeft');
+    socket.off('lobby:updated');
+    socket.off('game:started');
+    socket.off('game:state');
+    socket.off('game:phaseChanged');
+    socket.off('game:clueSubmitted');
+    socket.off('game:voteSubmitted');
+    socket.off('game:timerStarted');
+    socket.off('game:ended');
+
     // Lobby events
     socket.on('lobby:playerJoined', (lobby) => {
       set({ lobby });

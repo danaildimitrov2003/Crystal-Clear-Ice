@@ -14,7 +14,7 @@ const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
       ? process.env.CLIENT_URL 
-      : ['http://localhost:5173', 'http://localhost:3000'],
+      : [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/],
     methods: ['GET', 'POST']
   }
 });

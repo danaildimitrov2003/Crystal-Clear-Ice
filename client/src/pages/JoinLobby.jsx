@@ -25,8 +25,8 @@ export default function JoinLobby() {
   const handleJoinByCode = async () => {
     if (!lobbyCode.trim()) return;
     try {
-      await joinLobbyByCode(lobbyCode.trim().toUpperCase(), password);
-      navigate('/lobby');
+      const response = await joinLobbyByCode(lobbyCode.trim().toUpperCase(), password);
+      navigate(`/lobby/${response.lobby.code}`);
     } catch (err) {
       console.error('Failed to join lobby:', err);
     }
@@ -40,8 +40,8 @@ export default function JoinLobby() {
     }
     
     try {
-      await joinLobby(lobby.id);
-      navigate('/lobby');
+      const response = await joinLobby(lobby.id);
+      navigate(`/lobby/${response.lobby.code}`);
     } catch (err) {
       console.error('Failed to join lobby:', err);
     }
@@ -50,8 +50,8 @@ export default function JoinLobby() {
   const handlePasswordSubmit = async () => {
     if (!selectedLobby) return;
     try {
-      await joinLobby(selectedLobby.id, password);
-      navigate('/lobby');
+      const response = await joinLobby(selectedLobby.id, password);
+      navigate(`/lobby/${response.lobby.code}`);
     } catch (err) {
       console.error('Failed to join lobby:', err);
     }
@@ -60,7 +60,7 @@ export default function JoinLobby() {
   return (
     <div className="join-page page-container">
       <div className="join-content animate-fade-in">
-        <button className="back-btn" onClick={() => navigate('/menu')}>
+        <button className="back-btn" onClick={() => navigate('/')}>
           Back
         </button>
 

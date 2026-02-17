@@ -5,11 +5,15 @@ import './GamePhases.css';
 
 export default function GameOver({ voteResults, gameState, player }) {
   const navigate = useNavigate();
-  const { returnToLobby, startNewRound } = useGameStore();
+  const { returnToLobby, startNewRound, lobby } = useGameStore();
 
   const handleReturnToLobby = () => {
     returnToLobby();
-    navigate('/lobby');
+    if (lobby?.id) {
+      navigate(`/lobby/${lobby.code}`);
+      return;
+    }
+    navigate('/');
   };
 
   if (!voteResults) return <div>Loading results...</div>;

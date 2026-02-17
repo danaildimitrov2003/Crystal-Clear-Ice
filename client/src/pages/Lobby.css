@@ -66,6 +66,19 @@
   border-color: rgba(76, 175, 80, 0.8);
 }
 
+.invite-btn {
+  min-width: 140px;
+  background: rgba(147, 112, 219, 0.28);
+  border: 2px solid rgba(147, 112, 219, 0.55);
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.invite-btn:hover:not(:disabled) {
+  background: rgba(147, 112, 219, 0.38);
+  border-color: rgba(147, 112, 219, 0.75);
+}
+
 .add-bot-btn {
   min-width: 120px;
   background: rgba(129, 212, 250, 0.3);

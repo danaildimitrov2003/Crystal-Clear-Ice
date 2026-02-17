@@ -18,9 +18,9 @@ export default function Game() {
 
   useEffect(() => {
     if (!gameState && !lobby) {
-      navigate('/menu');
+      navigate('/');
     } else if (!gameState && lobby) {
-      navigate('/lobby');
+      navigate(`/lobby/${lobby.code}`);
     }
   }, [gameState, lobby, navigate]);
 

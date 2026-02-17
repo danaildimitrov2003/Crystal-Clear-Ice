@@ -15,12 +15,12 @@ export default function CreateLobby() {
     if (!lobbyName.trim()) return;
     
     try {
-      await createLobby(
+      const response = await createLobby(
         lobbyName.trim(),
         maxPlayers,
         isPrivate ? password : null
       );
-      navigate('/lobby');
+      navigate(`/lobby/${response.lobby.code}`);
     } catch (err) {
       console.error('Failed to create lobby:', err);
     }
@@ -29,7 +29,7 @@ export default function CreateLobby() {
   return (
     <div className="create-page page-container">
       <div className="create-content animate-fade-in">
-        <button className="back-btn" onClick={() => navigate('/menu')}>
+        <button className="back-btn" onClick={() => navigate('/')}>
           Back
         </button>
 
