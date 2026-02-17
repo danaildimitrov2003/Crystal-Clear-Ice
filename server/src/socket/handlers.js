@@ -335,8 +335,14 @@ function setupSocketHandlers(io, gameManager) {
           // Advance based on majority vote
           const newState = gameManager.advanceGamePhase(result.lobbyId);
           if (newState) {
-            io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
-            emitPlayerStates(io, gameManager, result.lobbyId);
+            // For ACTION_CHOICE transitioning to next phase, include actionVoteStatus if going back to CLUE_SUBMISSION
+            if (newState.phase === GAME_PHASES.CLUE_SUBMISSION) {
+              io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+              emitPlayerStates(io, gameManager, result.lobbyId);
+            } else {
+              io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+              emitPlayerStates(io, gameManager, result.lobbyId);
+            }
             startPhaseTimer(io, gameManager, result.lobbyId);
             const updatedGame = gameManager.getGame(result.lobbyId);
             handleBotActions(io, gameManager, result.lobbyId, updatedGame);
@@ -467,6 +473,13 @@ function startPhaseTimer(io, gameManager, lobbyId) {
         io.to(lobbyId).emit('game:phaseChanged', { 
           phase: newState.phase,
           voteResults
+        });
+      } else if (newState.phase === GAME_PHASES.ACTION_CHOICE) {
+        // For ACTION_CHOICE, include actionVoteStatus in the phase change event
+        emitPlayerStates(io, gameManager, lobbyId);
+        io.to(lobbyId).emit('game:phaseChanged', { 
+          phase: newState.phase,
+          actionVoteStatus: newState.actionVoteStatus
         });
       } else {
         io.to(lobbyId).emit('game:phaseChanged', { phase: newState.phase });
