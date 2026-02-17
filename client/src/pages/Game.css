@@ -347,11 +347,7 @@
   font-size: 1.5rem;
 }
 
-.result-highlight.correct {
-  color: var(--detective-blue);
-}
-
-.result-highlight.wrong {
+.result-highlight {
   color: var(--impostor-red);
 }
 

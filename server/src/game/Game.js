@@ -264,7 +264,7 @@ class Game {
     return {
       ...state,
       myRole: player?.role,
-      word: player?.role === 'impostor' ? null : this.word,
+      word: (player?.role === 'impostor' && this.phase !== GAME_PHASES.GAME_OVER) ? null : this.word,
       // Hide other players' roles until game over
       players: state.players.map(p => ({
         ...p,

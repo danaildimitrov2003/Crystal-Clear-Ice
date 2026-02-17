@@ -50,7 +50,7 @@ export default function GameOver({ voteResults, gameState, player }) {
         <>
           <p className="result-message">
             The majority chose{' '}
-            <span className={`result-highlight ${detectivesWin ? 'correct' : 'wrong'}`}>
+            <span className={`result-highlight`}>
               {votedOut.name}
             </span>
           </p>
