@@ -1,6 +1,12 @@
 const { GAME_PHASES, PHASE_DURATIONS } = require('../game/GameManager');
 
-const DEV_MODE = process.env.DEV_MODE === 'true';
+function isDevModeEnabled() {
+  return String(process.env.DEV_MODE || '').trim().toLowerCase() === 'true';
+}
+
+function getMinPlayers() {
+  return isDevModeEnabled() ? 1 : 3;
+}
 
 function resolveCallback(data, callback) {
   if (typeof data === 'function') return data;
@@ -17,7 +23,14 @@ function setupSocketHandlers(io, gameManager) {
       const session = gameManager.createSession(socket.id, name, isGuest, profilePicIndex);
       console.log(`Player joined: ${name} (${session.id})`);
       if (typeof callback === 'function') {
-        callback({ success: true, player: session });
+        callback({
+          success: true,
+          player: session,
+          serverConfig: {
+            devMode: isDevModeEnabled(),
+            minPlayers: getMinPlayers()
+          }
+        });
       }
     });
 
@@ -83,7 +96,7 @@ function setupSocketHandlers(io, gameManager) {
     // Add bot to lobby (dev mode only)
     socket.on('lobby:addBot', (data, callback) => {
       const cb = resolveCallback(data, callback);
-      if (!DEV_MODE) {
+      if (!isDevModeEnabled()) {
         if (cb) cb({ success: false, error: 'Bot creation only available in dev mode' });
         return;
       }

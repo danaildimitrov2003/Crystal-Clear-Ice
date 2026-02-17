@@ -30,6 +30,10 @@ export const useGameStore = create((set, get) => ({
   // UI state
   isLoading: false,
   error: null,
+  serverConfig: {
+    devMode: false,
+    minPlayers: 3
+  },
 
   // Actions
   setError: (error) => set({ error }),
@@ -41,7 +45,11 @@ export const useGameStore = create((set, get) => ({
     try {
       connectSocket();
       const response = await emitWithCallback('player:join', { name, isGuest, profilePicIndex });
-      set({ player: response.player, isLoading: false });
+      set({
+        player: response.player,
+        serverConfig: response.serverConfig || { devMode: false, minPlayers: 3 },
+        isLoading: false
+      });
       get().setupSocketListeners();
       return response;
     } catch (error) {
@@ -260,7 +268,11 @@ export const useGameStore = create((set, get) => ({
       timer: null,
       timerEndTime: null,
       isLoading: false,
-      error: null
+      error: null,
+      serverConfig: {
+        devMode: false,
+        minPlayers: 3
+      }
     });
   }
 }));

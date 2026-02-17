@@ -13,8 +13,7 @@ export default function Lobby() {
   const [uploadError, setUploadError] = useState(null);
   const [showWordsEditor, setShowWordsEditor] = useState(false);
   const [editableWords, setEditableWords] = useState({});
-  const { player, lobby, gameState, leaveLobby, startGame, addBot, isLoading, error, uploadCustomWords } = useGameStore();
-  const isDev = import.meta.env.DEV;
+  const { player, lobby, gameState, leaveLobby, startGame, addBot, isLoading, error, uploadCustomWords, serverConfig } = useGameStore();
 
   useEffect(() => {
     if (!lobby) {
@@ -188,7 +187,8 @@ export default function Lobby() {
   };
 
   const isHost = player?.id === lobby?.hostId;
-  const minPlayers = import.meta.env.DEV ? 1 : 3;
+  const minPlayers = serverConfig?.minPlayers ?? 3;
+  const isDevModeEnabled = serverConfig?.devMode === true;
   const canStart = lobby?.players?.length >= minPlayers;
 
   if (!lobby) return null;
@@ -219,7 +219,7 @@ export default function Lobby() {
                   Show Words
                 </button>
               )}
-              {isDev && isHost && lobby.players.length < lobby.maxPlayers && (
+              {isDevModeEnabled && isHost && lobby.players.length < lobby.maxPlayers && (
                 <button 
                   className="btn btn-secondary add-bot-btn"
                   onClick={handleAddBot}
