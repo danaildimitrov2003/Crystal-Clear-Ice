@@ -15,9 +15,11 @@
   background: none;
   border: none;
   color: var(--text-dark);
-  font-size: 1rem;
+  font-size: 3rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 8px 0;
+  padding: 0;
+  margin-top: 10px;
   align-self: flex-start;
   transition: opacity 0.3s;
 }
@@ -64,6 +66,7 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   background: var(--frost-glass);
+  color: var(--text-dark);
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
