@@ -8,6 +8,7 @@ const GAME_PHASES = {
   WORD_REVEAL: 'word_reveal',
   CLUE_SUBMISSION: 'clue_submission',
   DISCUSSION: 'discussion',
+  ACTION_CHOICE: 'action_choice',
   VOTING: 'voting',
   VOTE_RESULTS: 'vote_results',
   GAME_OVER: 'game_over'
@@ -18,7 +19,8 @@ const PHASE_DURATIONS = process.env.DEV_MODE === 'true' ? {
   THEME_REVEAL: 6000,
   WORD_REVEAL: 6000,
   CLUE_SUBMISSION: 15000,
-  DISCUSSION: 15000,
+  DISCUSSION: 30000,
+  ACTION_CHOICE: 10000,
   VOTING: 15000,
   VOTE_RESULTS: 3000
 } : {
@@ -27,6 +29,7 @@ const PHASE_DURATIONS = process.env.DEV_MODE === 'true' ? {
   WORD_REVEAL: 6000,
   CLUE_SUBMISSION: 30000,
   DISCUSSION: 30000,
+  ACTION_CHOICE: 15000,
   VOTING: 30000,
   VOTE_RESULTS: 5000
 };
@@ -41,7 +44,8 @@ class Game {
       role: null,
       clue: null,
       vote: null,
-      votesReceived: 0
+      votesReceived: 0,
+      actionVote: null
     }));
     this.phase = GAME_PHASES.WAITING;
     this.round = 1;
@@ -51,6 +55,7 @@ class Game {
     this.impostorId = null;
     this.clues = [];
     this.votes = {};
+    this.actionVotes = {};
     this.phaseTimer = null;
     this.phaseEndTime = null;
   }
@@ -128,7 +133,28 @@ class Game {
         }
         break;
       case GAME_PHASES.DISCUSSION:
-        this.phase = GAME_PHASES.VOTING;
+        this.phase = GAME_PHASES.ACTION_CHOICE;
+        break;
+      case GAME_PHASES.ACTION_CHOICE:
+        // Determine which action won based on votes
+        const actionResult = this.getActionVoteResult();
+        if (actionResult.action === 'continue') {
+          // Continue with same round, just reset clues/votes
+          this.phase = GAME_PHASES.CLUE_SUBMISSION;
+          this.currentPlayerIndex = 0;
+          this.clues = [];
+          this.votes = {};
+          this.players.forEach(p => {
+            p.clue = null;
+            p.vote = null;
+            p.votesReceived = 0;
+            p.actionVote = null;
+          });
+          this.actionVotes = {};
+        } else {
+          // Start voting
+          this.phase = GAME_PHASES.VOTING;
+        }
         break;
       case GAME_PHASES.VOTING:
         this.phase = GAME_PHASES.VOTE_RESULTS;
@@ -185,6 +211,71 @@ class Game {
         player.votesReceived++;
       }
     });
+  }
+
+  submitActionVote(playerId, action) {
+    const player = this.players.find(p => p.id === playerId);
+    if (!player) {
+      return { success: false, error: 'Player not found' };
+    }
+
+    if (action !== 'continue' && action !== 'start_vote') {
+      return { success: false, error: 'Invalid action' };
+    }
+
+    player.actionVote = action;
+    this.actionVotes[playerId] = action;
+    
+    return { success: true };
+  }
+
+  getActionVoteResult() {
+    let continueVotes = 0;
+    let startVoteVotes = 0;
+
+    Object.values(this.actionVotes).forEach(action => {
+      if (action === 'continue') {
+        continueVotes++;
+      } else if (action === 'start_vote') {
+        startVoteVotes++;
+      }
+    });
+
+    return {
+      action: continueVotes > startVoteVotes ? 'continue' : 'start_vote',
+      continueVotes,
+      startVoteVotes,
+      totalVotes: continueVotes + startVoteVotes
+    };
+  }
+
+  getActionVoteStatus() {
+    let continueVotes = 0;
+    let startVoteVotes = 0;
+
+    Object.values(this.actionVotes).forEach(action => {
+      if (action === 'continue') {
+        continueVotes++;
+      } else if (action === 'start_vote') {
+        startVoteVotes++;
+      }
+    });
+
+    return {
+      continueVotes,
+      startVoteVotes,
+      totalPlayers: this.players.length,
+      hasVoted: this.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        hasVoted: p.actionVote !== null,
+        vote: p.actionVote
+      }))
+    };
+  }
+
+  allActionVotesSubmitted() {
+    return this.players.every(p => p.actionVote !== null);
   }
 
   getVoteResults() {
@@ -249,10 +340,12 @@ class Game {
         role: p.role,
         clue: p.clue,
         hasVoted: p.vote !== null,
-        votesReceived: p.votesReceived
+        votesReceived: p.votesReceived,
+        actionVote: p.actionVote
       })),
       clues: this.clues,
-      phaseEndTime: this.phaseEndTime
+      phaseEndTime: this.phaseEndTime,
+      actionVoteStatus: this.phase === GAME_PHASES.ACTION_CHOICE ? this.getActionVoteStatus() : null
     };
   }
 

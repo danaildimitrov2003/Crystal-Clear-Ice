@@ -22,6 +22,7 @@ export const GAME_PHASES = {
   WORD_REVEAL: 'word_reveal',
   CLUE_SUBMISSION: 'clue_submission',
   DISCUSSION: 'discussion',
+  ACTION_CHOICE: 'action_choice',
   VOTING: 'voting',
   VOTE_RESULTS: 'vote_results',
   GAME_OVER: 'game_over'
@@ -258,6 +259,17 @@ export const useGameStore = create((set, get) => ({
     }
   },
 
+  // Submit action vote (continue vs start vote)
+  submitActionVote: async (action) => {
+    try {
+      const response = await emitWithCallback('game:submitActionVote', { action });
+      return response;
+    } catch (error) {
+      set({ error: error.message });
+      throw error;
+    }
+  },
+
   // Skip discussion
   skipDiscussion: () => {
     socket.emit('game:skipDiscussion');
@@ -283,6 +295,7 @@ export const useGameStore = create((set, get) => ({
     socket.off('game:phaseChanged');
     socket.off('game:clueSubmitted');
     socket.off('game:voteSubmitted');
+    socket.off('game:actionVoteSubmitted');
     socket.off('game:timerStarted');
     socket.off('game:ended');
 
@@ -338,6 +351,18 @@ export const useGameStore = create((set, get) => ({
               ...p,
               hasVoted: playersVoted.includes(p.id)
             }))
+          }
+        };
+      });
+    });
+
+    socket.on('game:actionVoteSubmitted', ({ actionVoteStatus }) => {
+      set((state) => {
+        if (!state.gameState) return state;
+        return {
+          gameState: {
+            ...state.gameState,
+            actionVoteStatus
           }
         };
       });

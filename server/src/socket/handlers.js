@@ -246,6 +246,32 @@ function setupSocketHandlers(io, gameManager) {
       }
     });
 
+    // Submit action vote (continue vs start vote)
+    socket.on('game:submitActionVote', ({ action }, callback) => {
+      const result = gameManager.submitActionVote(socket.id, action);
+      if (result.success) {
+        io.to(result.lobbyId).emit('game:actionVoteSubmitted', {
+          actionVoteStatus: result.gameState.actionVoteStatus
+        });
+
+        // Check if all action votes are in
+        if (result.allVoted) {
+          // Advance based on majority vote
+          const newState = gameManager.advanceGamePhase(result.lobbyId);
+          if (newState) {
+            io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+            emitPlayerStates(io, gameManager, result.lobbyId);
+            startPhaseTimer(io, gameManager, result.lobbyId);
+            const updatedGame = gameManager.getGame(result.lobbyId);
+            handleBotActions(io, gameManager, result.lobbyId, updatedGame);
+          }
+        }
+      }
+      if (typeof callback === 'function') {
+        callback(result);
+      }
+    });
+
     // Skip discussion
     socket.on('game:skipDiscussion', () => {
       const session = gameManager.getSession(socket.id);
@@ -429,6 +455,38 @@ function handleBotActions(io, gameManager, lobbyId, game) {
         }
       }, 2000);
     }
+  }
+
+  // Handle action choice phase
+  if (game.phase === GAME_PHASES.ACTION_CHOICE) {
+    lobby.players.forEach(player => {
+      if (gameManager.isBot(player.id) && !player.actionVote) {
+        const bot = gameManager.getBot(player.id);
+        
+        setTimeout(() => {
+          // Bots randomly choose between continue and start_vote
+          const action = Math.random() > 0.5 ? 'continue' : 'start_vote';
+          const result = gameManager.submitActionVote(player.id, action);
+          
+          if (result.success) {
+            io.to(lobbyId).emit('game:actionVoteSubmitted', {
+              actionVoteStatus: result.gameState.actionVoteStatus
+            });
+
+            if (result.allVoted) {
+              const newState = gameManager.advanceGamePhase(lobbyId);
+              if (newState) {
+                io.to(lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+                emitPlayerStates(io, gameManager, lobbyId);
+                startPhaseTimer(io, gameManager, lobbyId);
+                const updatedGame = gameManager.getGame(lobbyId);
+                handleBotActions(io, gameManager, lobbyId, updatedGame);
+              }
+            }
+          }
+        }, 2000);
+      }
+    });
   }
 
   // Handle voting phase

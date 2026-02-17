@@ -2,8 +2,6 @@ import { useGameStore } from '../../store/gameStore';
 import './GamePhases.css';
 
 export default function Discussion({ clues, timeLeft }) {
-  const { skipDiscussion, startNewRound } = useGameStore();
-
   return (
     <div className="phase-container discussion-container">
       {timeLeft !== null && (
@@ -27,14 +25,7 @@ export default function Discussion({ clues, timeLeft }) {
         </div>
       )}
 
-      <div className="discussion-buttons">
-        <button className="btn btn-primary" onClick={skipDiscussion}>
-          Start Vote
-        </button>
-        <button className="btn btn-secondary" onClick={startNewRound}>
-          One More Round
-        </button>
-      </div>
+      <p className="discussion-note">After discussion, you'll vote on whether to continue or start voting for the impostor.</p>
     </div>
   );
 }

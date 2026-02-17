@@ -6,6 +6,7 @@ import ThemeReveal from '../components/game/ThemeReveal';
 import WordReveal from '../components/game/WordReveal';
 import ClueSubmission from '../components/game/ClueSubmission';
 import Discussion from '../components/game/Discussion';
+import ActionChoice from '../components/game/ActionChoice';
 import Voting from '../components/game/Voting';
 import VoteResults from '../components/game/VoteResults';
 import GameOver from '../components/game/GameOver';
@@ -67,6 +68,15 @@ export default function Game() {
         return (
           <Discussion 
             clues={gameState.clues}
+            timeLeft={timeLeft}
+          />
+        );
+
+      case GAME_PHASES.ACTION_CHOICE:
+        return (
+          <ActionChoice 
+            gameState={gameState}
+            player={player}
             timeLeft={timeLeft}
           />
         );

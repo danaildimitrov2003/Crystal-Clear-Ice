@@ -254,9 +254,31 @@
   filter: drop-shadow(0 4px 20px rgba(78, 205, 196, 0.2));
 }
 
+.card-logo-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  touch-action: manipulation;
+}
+
+.card-logo-shell:active {
+  transform: translateY(2px) scale(0.95);
+  filter: brightness(0.95);
+}
+
 .shake-hello {
   animation: helloShake 2.8s ease-in-out 1s infinite;
   transform-origin: 50% 70%;
+}
+
+.avatar-swap-left {
+  animation: avatarSwapInFromLeft 0.32s ease-out, helloShake 2.8s ease-in-out 1s infinite;
+}
+
+.avatar-swap-right {
+  animation: avatarSwapInFromRight 0.32s ease-out, helloShake 2.8s ease-in-out 1s infinite;
 }
 
 .card-description {
@@ -360,6 +382,28 @@
   }
   58%, 100% {
     transform: rotate(0deg);
+  }
+}
+
+@keyframes avatarSwapInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes avatarSwapInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 
