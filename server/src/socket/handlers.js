@@ -101,6 +101,45 @@ function setupSocketHandlers(io, gameManager) {
       if (cb) cb(result);
     });
 
+    // Upload custom words (host only)
+    socket.on('lobby:uploadWords', ({ wordData }, callback) => {
+      const session = gameManager.getSession(socket.id);
+      if (!session || !session.lobbyId) {
+        if (typeof callback === 'function') {
+          callback({ success: false, error: 'Not in a lobby' });
+        }
+        return;
+      }
+
+      const lobby = gameManager.lobbies.get(session.lobbyId);
+      if (!lobby || lobby.hostId !== session.id) {
+        if (typeof callback === 'function') {
+          callback({ success: false, error: 'Only host can upload words' });
+        }
+        return;
+      }
+
+      try {
+        // Validate word data structure
+        if (!wordData || typeof wordData !== 'object') {
+          throw new Error('Invalid word data format');
+        }
+
+        // Store custom words in lobby
+        lobby.customWords = wordData;
+        console.log(`Custom words uploaded to lobby ${session.lobbyId}`);
+        
+        if (typeof callback === 'function') {
+          callback({ success: true, message: 'Words uploaded successfully' });
+        }
+      } catch (error) {
+        console.error('Error uploading words:', error);
+        if (typeof callback === 'function') {
+          callback({ success: false, error: error.message });
+        }
+      }
+    });
+
     // Start game
     socket.on('game:start', (data, callback) => {
       const cb = resolveCallback(data, callback);

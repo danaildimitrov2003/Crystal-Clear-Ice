@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { profilePics, getProfilePic } from '../constants/profilePics';
@@ -6,7 +6,9 @@ import './Lobby.css';
 
 export default function Lobby() {
   const navigate = useNavigate();
-  const { player, lobby, gameState, leaveLobby, startGame, addBot, isLoading, error } = useGameStore();
+  const fileInputRef = useRef(null);
+  const [uploadError, setUploadError] = useState(null);
+  const { player, lobby, gameState, leaveLobby, startGame, addBot, isLoading, error, uploadCustomWords } = useGameStore();
   const isDev = import.meta.env.DEV;
 
   useEffect(() => {
@@ -42,6 +44,43 @@ export default function Lobby() {
     }
   };
 
+  const handleFileSelect = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+
+    try {
+      const content = await file.text();
+      const data = JSON.parse(content);
+      
+      // Validate JSON structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('JSON must be an object');
+      }
+
+      // Validate that it has word categories
+      const hasValidCategories = Object.values(data).some(val => 
+        Array.isArray(val) && val.length > 0
+      );
+      
+      if (!hasValidCategories) {
+        throw new Error('JSON must contain categories with word arrays. Example: { "animals": ["cat", "dog"], "food": ["pizza", "burger"] }');
+      }
+
+      await uploadCustomWords(data);
+      setUploadError(null);
+    } catch (err) {
+      setUploadError(err.message);
+      console.error('Failed to upload custom words:', err);
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const isHost = player?.id === lobby?.hostId;
   const minPlayers = import.meta.env.DEV ? 1 : 3;
   const canStart = lobby?.players?.length >= minPlayers;
@@ -55,6 +94,25 @@ export default function Lobby() {
           <div className="lobby-title-row">
             <h2 className="lobby-name">{lobby.name}</h2>
             <div className="lobby-actions">
+              {isHost && (
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileSelect}
+                  style={{ display: 'none' }}
+                />
+              )}
+              {isHost && (
+                <button 
+                  className="btn btn-secondary upload-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading}
+                  title="Upload custom words/themes JSON"
+                >
+                  Upload Words
+                </button>
+              )}
               {isDev && isHost && lobby.players.length < lobby.maxPlayers && (
                 <button 
                   className="btn btn-secondary add-bot-btn"
@@ -117,6 +175,7 @@ export default function Lobby() {
         </div>
 
         {error && <p className="error-text">{error}</p>}
+        {uploadError && <p className="error-text">Upload error: {uploadError}</p>}
 
         <button className="btn btn-secondary leave-btn" onClick={handleLeave}>
           Leave Lobby

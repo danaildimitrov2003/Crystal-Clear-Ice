@@ -133,6 +133,17 @@ export const useGameStore = create((set, get) => ({
     }
   },
 
+  // Upload custom words
+  uploadCustomWords: async (wordData) => {
+    try {
+      const response = await emitWithCallback('lobby:uploadWords', { wordData });
+      return response;
+    } catch (error) {
+      set({ error: error.message });
+      throw error;
+    }
+  },
+
   // Submit clue
   submitClue: async (clue) => {
     try {

@@ -32,9 +32,10 @@ const PHASE_DURATIONS = process.env.DEV_MODE === 'true' ? {
 };
 
 class Game {
-  constructor(lobbyId, players) {
+  constructor(lobbyId, players, customWords = null) {
     this.id = uuidv4();
     this.lobbyId = lobbyId;
+    this.customWords = customWords;
     this.players = players.map(p => ({
       ...p,
       role: null,
@@ -54,9 +55,29 @@ class Game {
     this.phaseEndTime = null;
   }
 
+  getRandomCategoryAndWord() {
+    // Use custom words if available, otherwise use default
+    const wordSource = this.customWords || require('../data/words').getWordCategories();
+    
+    const categories = Object.keys(wordSource);
+    if (categories.length === 0) {
+      throw new Error('No word categories available');
+    }
+
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const words = wordSource[category];
+    
+    if (!Array.isArray(words) || words.length === 0) {
+      throw new Error(`Invalid words in category: ${category}`);
+    }
+
+    const word = words[Math.floor(Math.random() * words.length)];
+    return { category, word };
+  }
+
   start() {
     // Select random word and category
-    const { category, word } = getRandomCategoryAndWord();
+    const { category, word } = this.getRandomCategoryAndWord();
     this.category = category;
     this.word = word;
 
@@ -255,7 +276,7 @@ class Game {
 
   startRound() {
     // Select new random word and category
-    const { category, word } = getRandomCategoryAndWord();
+    const { category, word } = this.getRandomCategoryAndWord();
     this.category = category;
     this.word = word;
 

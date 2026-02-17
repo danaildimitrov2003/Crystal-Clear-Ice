@@ -62,5 +62,6 @@ module.exports = {
   wordCategories,
   getRandomCategory,
   getRandomWord,
-  getRandomCategoryAndWord
+  getRandomCategoryAndWord,
+  getWordCategories: () => wordCategories
 };

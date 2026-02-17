@@ -156,7 +156,7 @@ class GameManager {
       return { success: false, error: `Need at least ${minPlayers} player${minPlayers > 1 ? 's' : ''} to start` };
     }
 
-    const game = new Game(lobby.id, lobby.players);
+    const game = new Game(lobby.id, lobby.players, lobby.customWords);
     game.start();
     
     this.games.set(game.id, game);
