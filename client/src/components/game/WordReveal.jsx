@@ -3,13 +3,6 @@ import './GamePhases.css';
 export default function WordReveal({ word, isImpostor }) {
   return (
     <div className="phase-container reveal-container">
-      <div 
-        className="avatar avatar-large word-icon"
-        style={{ backgroundColor: '#26C6DA' }}
-      >
-        W
-      </div>
-      
       {isImpostor ? (
         <>
           <p className="reveal-label">You only know the theme!</p>

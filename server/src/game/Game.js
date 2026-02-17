@@ -299,6 +299,9 @@ class Game {
     });
     
     this.impostorId = this.players[impostorIndex].id;
+    
+    console.log(`[Round ${this.round + 1}] Impostor assigned: ${this.players[impostorIndex].name} (ID: ${this.impostorId})`);
+    console.log(`[Round ${this.round + 1}] All roles:`, this.players.map(p => `${p.name}: ${p.role}`).join(', '));
 
     // Randomize turn order
     this.players = this.shuffleArray([...this.players]);

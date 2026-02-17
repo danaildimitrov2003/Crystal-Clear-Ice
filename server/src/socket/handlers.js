@@ -195,9 +195,12 @@ function setupSocketHandlers(io, gameManager) {
             }
           }, 1000);
         } else {
-          // Move to next player
+          // Move to next player and reset timer
           gameManager.advanceGamePhase(result.lobbyId);
           emitPlayerStates(io, gameManager, result.lobbyId);
+          startPhaseTimer(io, gameManager, result.lobbyId);
+          const updatedGame = gameManager.getGame(result.lobbyId);
+          handleBotActions(io, gameManager, result.lobbyId, updatedGame);
         }
       }
       if (typeof callback === 'function') {
@@ -247,16 +250,23 @@ function setupSocketHandlers(io, gameManager) {
 
     // Start new round
     socket.on('game:newRound', () => {
+      console.log('game:newRound received from socket:', socket.id);
       const session = gameManager.getSession(socket.id);
-      if (!session || !session.lobbyId) return;
+      if (!session || !session.lobbyId) {
+        console.log('Invalid session or lobby for newRound');
+        return;
+      }
 
       const newState = gameManager.startNewRound(session.lobbyId);
       if (newState) {
+        console.log('New round started. Phase:', newState.phase, 'Round:', newState.round);
         const updatedGame = gameManager.getGame(session.lobbyId);
         io.to(session.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
         emitPlayerStates(io, gameManager, session.lobbyId);
         startPhaseTimer(io, gameManager, session.lobbyId);
         handleBotActions(io, gameManager, session.lobbyId, updatedGame);
+      } else {
+        console.log('Failed to start new round');
       }
     });
 
@@ -354,11 +364,14 @@ function emitPlayerStates(io, gameManager, lobbyId) {
   const game = gameManager.getGame(lobbyId);
   if (!lobby || !game) return;
 
+  console.log(`[emitPlayerStates] Phase: ${game.phase}, Round: ${game.round}, Impostor ID: ${game.impostorId}`);
+  
   lobby.players.forEach(player => {
     const playerSocket = Array.from(gameManager.playerSessions.entries())
       .find(([_, s]) => s.id === player.id);
     if (playerSocket) {
       const playerState = game.getPlayerState(player.id);
+      console.log(`  Sending to ${player.name}: myRole = ${playerState.myRole}`);
       io.to(playerSocket[0]).emit('game:state', playerState);
     }
   });
