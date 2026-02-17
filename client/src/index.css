@@ -11,18 +11,19 @@
   --ice-dark: #26C6DA;
   --ice-deep: #00ACC1;
   --frost-white: rgba(255, 255, 255, 0.9);
-  --frost-glass: rgba(255, 255, 255, 0.25);
-  --text-dark: #1A5F7A;
+  --frost-glass: rgba(255, 255, 255, 0.12);
+  --text-dark: #c8eaf5;
   --text-light: #ffffff;
   --impostor-red: #FF6B6B;
   --detective-blue: #4ECDC4;
   --warning-yellow: #FFD93D;
-  --gradient-bg: linear-gradient(180deg, #87CEEB 0%, #4ECDC4 50%, #26A69A 100%);
+  --gradient-bg: linear-gradient(165deg, #e8f7fc 0%, #a2d9ef 15%, #4ba8c9 35%, #1a6b8a 55%, #0e3d52 75%, #0a1e30 100%);
 }
 
 body {
   font-family: 'Papyrus', 'Poppins', fantasy, sans-serif;
   background: var(--gradient-bg);
+  background-attachment: fixed;
   min-height: 100vh;
   color: var(--text-dark);
   overflow-x: hidden;
@@ -32,6 +33,89 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* Ambient arctic glow */
+#root::before {
+  content: '';
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  width: 80vw;
+  height: 60vh;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(135, 206, 235, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Floating Ice Particles ─── */
+.ice-particles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ice-shard {
+  position: absolute;
+  background: rgba(200, 230, 245, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  animation: float-up linear infinite;
+  opacity: 0;
+}
+
+.ice-shard:nth-child(1) {
+  width: 8px; height: 14px;
+  left: 8%; animation-duration: 22s; animation-delay: 0s;
+}
+.ice-shard:nth-child(2) {
+  width: 5px; height: 10px;
+  left: 18%; animation-duration: 28s; animation-delay: 3s;
+}
+.ice-shard:nth-child(3) {
+  width: 12px; height: 6px;
+  left: 32%; animation-duration: 20s; animation-delay: 7s;
+}
+.ice-shard:nth-child(4) {
+  width: 6px; height: 16px;
+  left: 45%; animation-duration: 26s; animation-delay: 2s;
+}
+.ice-shard:nth-child(5) {
+  width: 10px; height: 8px;
+  left: 58%; animation-duration: 24s; animation-delay: 5s;
+}
+.ice-shard:nth-child(6) {
+  width: 4px; height: 12px;
+  left: 70%; animation-duration: 30s; animation-delay: 1s;
+}
+.ice-shard:nth-child(7) {
+  width: 9px; height: 5px;
+  left: 82%; animation-duration: 21s; animation-delay: 8s;
+}
+.ice-shard:nth-child(8) {
+  width: 7px; height: 13px;
+  left: 92%; animation-duration: 25s; animation-delay: 4s;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(110vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(180deg);
+    opacity: 0;
+  }
 }
 
 /* Custom scrollbar */
@@ -55,10 +139,10 @@ body {
 
 /* Glass effect utility */
 .glass {
-  background: var(--frost-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
 }
 
@@ -79,25 +163,25 @@ body {
 }
 
 .btn-primary {
-  background: var(--frost-glass);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-dark);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .btn-primary:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.18);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-dark);
-  border: 2px solid var(--frost-glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-secondary:hover {
-  background: var(--frost-glass);
+  background: rgba(255, 255, 255, 0.14);
   transform: scale(1.05);
 }
 
@@ -120,9 +204,9 @@ body {
 /* Input styles */
 .input {
   padding: 12px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  background: var(--frost-glass);
+  background: rgba(255, 255, 255, 0.08);
   font-family: 'Papyrus', fantasy, sans-serif;
   font-size: 1rem;
   color: var(--text-dark);
@@ -131,13 +215,13 @@ body {
 }
 
 .input::placeholder {
-  color: rgba(26, 95, 122, 0.5);
+  color: rgba(160, 200, 220, 0.5);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--ice-dark);
-  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(100, 200, 230, 0.4);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* Title font - Iced effect */
@@ -146,15 +230,14 @@ body {
   font-weight: 300;
   letter-spacing: 4px;
   text-shadow: 
-    0 0 10px rgba(255, 255, 255, 0.8),
-    0 0 20px rgba(135, 206, 235, 0.6),
-    0 0 30px rgba(135, 206, 235, 0.4),
-    2px 2px 4px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(180deg, #ffffff 0%, #87CEEB 50%, #4ECDC4 100%);
+    0 0 15px rgba(135, 206, 235, 0.5),
+    0 0 30px rgba(135, 206, 235, 0.3),
+    0 0 45px rgba(100, 180, 220, 0.15);
+  background: linear-gradient(180deg, #ffffff 0%, #b8e4f0 40%, #6dc8e0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 /* Page container */
@@ -169,13 +252,13 @@ body {
 
 /* Card styles */
 .card {
-  background: var(--frost-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* Avatar styles */

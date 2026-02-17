@@ -34,6 +34,39 @@ function setupSocketHandlers(io, gameManager) {
       }
     });
 
+    // Reconnect an existing player – allows the client to keep its old
+    // playerId so it stays associated with the lobby & game.
+    socket.on('player:reconnect', ({ playerId, name, isGuest = true, profilePicIndex = 0 }, callback) => {
+      if (!playerId) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Missing playerId' });
+        return;
+      }
+
+      // Build a session that re-uses the original playerId
+      const session = {
+        id: playerId,
+        socketId: socket.id,
+        name,
+        isGuest,
+        profilePicIndex,
+        lobbyId: null,
+        avatar: gameManager.getRandomAvatar()
+      };
+      gameManager.playerSessions.set(socket.id, session);
+      console.log(`Player reconnected: ${name} (${playerId}) on socket ${socket.id}`);
+
+      if (typeof callback === 'function') {
+        callback({
+          success: true,
+          player: session,
+          serverConfig: {
+            devMode: isDevModeEnabled(),
+            minPlayers: getMinPlayers()
+          }
+        });
+      }
+    });
+
     // Create a new lobby
     socket.on('lobby:create', ({ name, maxPlayers, password }, callback) => {
       const result = gameManager.createLobby(socket.id, name, maxPlayers, password);
@@ -69,6 +102,41 @@ function setupSocketHandlers(io, gameManager) {
       }
       if (typeof callback === 'function') {
         callback(result);
+      }
+    });
+
+    // Rejoin lobby after reconnect – re-maps the new socket to the existing
+    // player that is already seated in the lobby so that broadcast events
+    // (and all socketId-based lookups) work again.
+    socket.on('lobby:rejoin', ({ lobbyId }, callback) => {
+      const session = gameManager.getSession(socket.id);
+      if (!session) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Session not found' });
+        return;
+      }
+
+      const lobby = gameManager.lobbies.get(lobbyId);
+      if (!lobby) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Lobby not found' });
+        return;
+      }
+
+      // Check if this player is actually in the lobby
+      const isInLobby = lobby.players.some(p => p.id === session.id);
+      if (!isInLobby) {
+        // Try to re-add them (they might have been removed on disconnect)
+        const addResult = lobby.addPlayer(session);
+        if (!addResult.success) {
+          if (typeof callback === 'function') callback({ success: false, error: addResult.error });
+          return;
+        }
+      }
+
+      session.lobbyId = lobby.id;
+      socket.join(lobby.id);
+      console.log(`Player ${session.name} rejoined lobby ${lobby.id} after reconnect`);
+      if (typeof callback === 'function') {
+        callback({ success: true, lobby: lobby.getFullInfo() });
       }
     });
 
@@ -188,6 +256,13 @@ function setupSocketHandlers(io, gameManager) {
     socket.on('game:submitClue', ({ clue }, callback) => {
       const result = gameManager.submitClue(socket.id, clue);
       if (result.success) {
+        // Clear the existing phase timer since the player acted before it expired
+        const currentGame = gameManager.getGame(result.lobbyId);
+        if (currentGame && currentGame.phaseTimer) {
+          clearTimeout(currentGame.phaseTimer);
+          currentGame.phaseTimer = null;
+        }
+
         // Notify all players about the clue
         io.to(result.lobbyId).emit('game:clueSubmitted', {
           clues: result.gameState.clues,
@@ -202,6 +277,7 @@ function setupSocketHandlers(io, gameManager) {
             const newState = gameManager.advanceGamePhase(result.lobbyId);
             if (newState) {
               io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+              emitPlayerStates(io, gameManager, result.lobbyId);
               startPhaseTimer(io, gameManager, result.lobbyId);
               const updatedGame = gameManager.getGame(result.lobbyId);
               handleBotActions(io, gameManager, result.lobbyId, updatedGame);
@@ -330,12 +406,25 @@ function setupSocketHandlers(io, gameManager) {
     socket.on('disconnect', () => {
       const session = gameManager.getSession(socket.id);
       if (session && session.lobbyId) {
-        const result = gameManager.leaveLobby(socket.id);
-        if (result.success && !result.lobbyDeleted) {
-          socket.to(result.lobbyId).emit('lobby:playerLeft', result.lobby);
+        const lobby = gameManager.lobbies.get(session.lobbyId);
+        const hasActiveGame = lobby && lobby.gameId;
+
+        if (hasActiveGame) {
+          // During an active game, don't remove the player from the lobby.
+          // Just delete the socket→session mapping so the new socket can
+          // re-register on reconnect. The player data stays in the lobby.
+          gameManager.playerSessions.delete(socket.id);
+          console.log(`Player ${session.name} disconnected during active game, keeping in lobby for reconnect`);
+        } else {
+          const result = gameManager.leaveLobby(socket.id);
+          if (result.success && !result.lobbyDeleted) {
+            socket.to(result.lobbyId).emit('lobby:playerLeft', result.lobby);
+          }
+          gameManager.playerSessions.delete(socket.id);
         }
+      } else {
+        gameManager.playerSessions.delete(socket.id);
       }
-      gameManager.removeSession(socket.id);
       console.log(`Client disconnected: ${socket.id}`);
     });
   });

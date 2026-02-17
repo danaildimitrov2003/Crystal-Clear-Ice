@@ -26,8 +26,8 @@
 .header-title {
   font-size: 4.5rem;
   margin: 0;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.6),
-               0 0 40px rgba(78, 205, 196, 0.4);
+  text-shadow: 0 0 20px rgba(180, 230, 255, 0.4),
+               0 0 40px rgba(78, 205, 196, 0.2);
 }
 
 .header-subtitle {
@@ -203,8 +203,8 @@
 }
 
 .main-card {
-  background: rgba(255, 255, 255, 0.35);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .card-title {
@@ -229,9 +229,9 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.4);
-  color: #0b1f2a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(200, 230, 245, 0.85);
   font-size: 1.8rem;
   line-height: 1;
   display: flex;
@@ -243,7 +243,7 @@
 
 .avatar-arrow:hover {
   transform: scale(1.08);
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .card-logo {

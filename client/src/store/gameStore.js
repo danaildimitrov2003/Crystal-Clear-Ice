@@ -298,6 +298,57 @@ export const useGameStore = create((set, get) => ({
     socket.off('game:actionVoteSubmitted');
     socket.off('game:timerStarted');
     socket.off('game:ended');
+    socket.off('connect');
+
+    // On reconnect, re-register our session so the server maps the new
+    // socket.id to our player and lobby.  Without this, every server-side
+    // lookup by socketId fails with "Not in a game".
+    socket.on('connect', () => {
+      const { player: currentPlayer, lobby: currentLobby, gameState: currentGameState } = get();
+      if (currentPlayer?.id && currentPlayer?.name) {
+        // Use player:reconnect to preserve the original playerId so the
+        // server can re-associate us with our lobby & game seat.
+        emitWithCallback('player:reconnect', {
+          playerId: currentPlayer.id,
+          name: currentPlayer.name,
+          isGuest: currentPlayer.isGuest ?? true,
+          profilePicIndex: currentPlayer.profilePicIndex ?? 0
+        }).then((response) => {
+          set({
+            player: response.player,
+            serverConfig: response.serverConfig || { devMode: false, minPlayers: 3 }
+          });
+          // Rejoin the lobby room so broadcast events reach us
+          if (currentLobby?.id) {
+            emitWithCallback('lobby:rejoin', { lobbyId: currentLobby.id })
+              .then((res) => {
+                if (res.lobby) set({ lobby: res.lobby });
+                // Re-fetch game state if a game was in progress
+                if (currentGameState) {
+                  emitWithCallback('game:getState', {}).then((stateRes) => {
+                    if (stateRes.success && stateRes.state) {
+                      set({ gameState: stateRes.state });
+                    }
+                  }).catch(() => {});
+                }
+              })
+              .catch(() => {});
+          }
+        }).catch(() => {
+          // Reconnect with old ID failed; fall back to a fresh join
+          emitWithCallback('player:join', {
+            name: currentPlayer.name,
+            isGuest: currentPlayer.isGuest ?? true,
+            profilePicIndex: currentPlayer.profilePicIndex ?? 0
+          }).then((response) => {
+            set({
+              player: response.player,
+              serverConfig: response.serverConfig || { devMode: false, minPlayers: 3 }
+            });
+          }).catch(() => {});
+        });
+      }
+    });
 
     // Lobby events
     socket.on('lobby:playerJoined', (lobby) => {
@@ -314,9 +365,14 @@ export const useGameStore = create((set, get) => ({
 
     // Game events
     socket.on('game:started', ({ phase }) => {
-      set((state) => ({
-        gameState: { ...state.gameState, phase }
-      }));
+      set((state) => {
+        // If we already have game state, just update the phase.
+        // Otherwise wait for the full game:state event.
+        if (state.gameState) {
+          return { gameState: { ...state.gameState, phase } };
+        }
+        return {};
+      });
     });
 
     socket.on('game:state', (gameState) => {
@@ -369,7 +425,10 @@ export const useGameStore = create((set, get) => ({
     });
 
     socket.on('game:timerStarted', ({ phase, duration, endTime }) => {
-      set({ timerEndTime: endTime });
+      // Use duration to compute a local end time, avoiding clock-skew between
+      // different clients and the server.
+      const localEndTime = Date.now() + duration;
+      set({ timerEndTime: localEndTime });
     });
 
     socket.on('game:ended', ({ lobby }) => {

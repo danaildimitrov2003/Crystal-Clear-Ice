@@ -9,6 +9,16 @@ import Game from './pages/Game';
 function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <div className="ice-particles" aria-hidden="true">
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+        <div className="ice-shard" />
+      </div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/join" element={<ProtectedRoute><JoinLobby /></ProtectedRoute>} />
