@@ -129,18 +129,20 @@ export default function Home() {
                 >
                   ‹
                 </button>
-                <img
-                  key={profilePics[selectedPicIndex] || '/logo.png'}
-                  src={profilePics[selectedPicIndex] || '/logo.png'}
-                  alt="Selected character"
-                  className={`card-logo shake-hello ${
-                    avatarDirection === 'left'
-                      ? 'avatar-swap-left'
-                      : avatarDirection === 'right'
-                        ? 'avatar-swap-right'
-                        : ''
-                  }`}
-                />
+                <div className="card-logo-shell">
+                  <img
+                    key={profilePics[selectedPicIndex] || '/logo.png'}
+                    src={profilePics[selectedPicIndex] || '/logo.png'}
+                    alt="Selected character"
+                    className={`card-logo shake-hello ${
+                      avatarDirection === 'left'
+                        ? 'avatar-swap-left'
+                        : avatarDirection === 'right'
+                          ? 'avatar-swap-right'
+                          : ''
+                    }`}
+                  />
+                </div>
                 <button
                   className="avatar-arrow"
                   onClick={goNextPic}
@@ -224,18 +226,20 @@ export default function Home() {
               >
                 ‹
               </button>
-              <img
-                key={profilePics[selectedPicIndex] || '/logo.png'}
-                src={profilePics[selectedPicIndex] || '/logo.png'}
-                alt="Selected character"
-                className={`card-logo shake-hello ${
-                  avatarDirection === 'left'
-                    ? 'avatar-swap-left'
-                    : avatarDirection === 'right'
-                      ? 'avatar-swap-right'
-                      : ''
-                }`}
-              />
+              <div className="card-logo-shell">
+                <img
+                  key={profilePics[selectedPicIndex] || '/logo.png'}
+                  src={profilePics[selectedPicIndex] || '/logo.png'}
+                  alt="Selected character"
+                  className={`card-logo shake-hello ${
+                    avatarDirection === 'left'
+                      ? 'avatar-swap-left'
+                      : avatarDirection === 'right'
+                        ? 'avatar-swap-right'
+                        : ''
+                  }`}
+                />
+              </div>
               <button
                 className="avatar-arrow"
                 onClick={goNextPic}

@@ -128,6 +128,20 @@
   filter: drop-shadow(0 4px 20px rgba(78, 205, 196, 0.2));
 }
 
+.card-logo-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  touch-action: manipulation;
+}
+
+.card-logo-shell:active {
+  transform: translateY(2px) scale(0.95);
+  filter: brightness(0.95);
+}
+
 .shake-hello {
   animation: helloShake 2.8s ease-in-out 1s infinite;
   transform-origin: 50% 70%;
