@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { getProfilePic } from '../../constants/profilePics';
+import { useGameStore } from '../../store/gameStore';
 import './GamePhases.css';
 
 const IMPOSTOR_EMOJI_POOL = ['😈', '🩸', '🗡️', '☠️', '👹', '🔥', '💀', '⚔️'];
@@ -8,6 +9,7 @@ const DETECTIVE_EMOJI_POOL = ['💰', '🪙', '⭐', '🌟', '✨', '🏅', '�
 export default function RoleReveal({ role, player }) {
   const isImpostor = role === 'impostor';
   const isDetective = role === 'detective';
+  const effectsVolume = useGameStore((state) => state.effectsVolume);
   const impostorParticles = useMemo(
     () =>
       Array.from({ length: 46 }, (_, index) => ({
@@ -38,17 +40,22 @@ export default function RoleReveal({ role, player }) {
       return undefined;
     }
 
+    if (effectsVolume <= 0) {
+      return undefined;
+    }
+
     const revealAudio = new Audio(
       isImpostor ? '/sounds/impostorSound.mp3' : '/sounds/detectiveSound.mp3'
     );
-    revealAudio.volume = isImpostor ? 0.85 : 0.8;
+    const baseVolume = isImpostor ? 0.85 : 0.8;
+    revealAudio.volume = Math.min(1, Math.max(0, baseVolume * effectsVolume));
     revealAudio.play().catch(() => {});
 
     return () => {
       revealAudio.pause();
       revealAudio.currentTime = 0;
     };
-  }, [isImpostor, isDetective]);
+  }, [isImpostor, isDetective, effectsVolume]);
   
   return (
     <div className="phase-container role-reveal">
