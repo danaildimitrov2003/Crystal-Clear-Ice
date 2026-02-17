@@ -98,14 +98,14 @@ export default function Game() {
   };
 
   const isRevealPhase = gameState.phase === GAME_PHASES.THEME_REVEAL || 
-    (gameState.phase === GAME_PHASES.WORD_REVEAL && gameState.myRole !== 'impostor');
+    gameState.phase === GAME_PHASES.WORD_REVEAL;
 
   const renderRevealContent = () => {
     if (gameState.phase === GAME_PHASES.THEME_REVEAL) {
       return <ThemeReveal category={gameState.category} />;
     }
-    if (gameState.phase === GAME_PHASES.WORD_REVEAL && gameState.myRole !== 'impostor') {
-      return <WordReveal word={gameState.word} isImpostor={false} category={gameState.category} />;
+    if (gameState.phase === GAME_PHASES.WORD_REVEAL) {
+      return <WordReveal word={gameState.word} isImpostor={gameState.myRole === 'impostor'} category={gameState.category} />;
     }
     return null;
   };
@@ -121,7 +121,7 @@ export default function Game() {
         {gameState.phase !== GAME_PHASES.ROLE_REVEAL &&
          gameState.phase !== GAME_PHASES.THEME_REVEAL &&
          gameState.phase !== GAME_PHASES.WORD_REVEAL && (
-          <div className="game-info-bar card">
+          <div className="game-info-bar">
             <div className="game-info-item">
               <span className="game-info-label">Category</span>
               <span className="game-info-value">{gameState.category || 'Unknown'}</span>
