@@ -133,6 +133,14 @@
   transform-origin: 50% 70%;
 }
 
+.avatar-swap-left {
+  animation: avatarSwapInFromLeft 0.32s ease-out, helloShake 2.8s ease-in-out 1s infinite;
+}
+
+.avatar-swap-right {
+  animation: avatarSwapInFromRight 0.32s ease-out, helloShake 2.8s ease-in-out 1s infinite;
+}
+
 .card-description {
   text-align: center;
   color: var(--text-dark);
@@ -234,6 +242,28 @@
   }
   58%, 100% {
     transform: rotate(0deg);
+  }
+}
+
+@keyframes avatarSwapInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes avatarSwapInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 

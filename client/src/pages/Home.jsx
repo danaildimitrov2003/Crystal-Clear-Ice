@@ -6,7 +6,11 @@ import './Home.css';
 
 export default function Home() {
   const [name, setName] = useState('');
-  const [selectedPicIndex, setSelectedPicIndex] = useState(0);
+  const [selectedPicIndex, setSelectedPicIndex] = useState(() => {
+    if (profilePics.length === 0) return 0;
+    return Math.floor(Math.random() * profilePics.length);
+  });
+  const [avatarDirection, setAvatarDirection] = useState(null);
   const [searchParams] = useSearchParams();
   const { player, joinAsPlayer, joinLobbyByCode, isLoading, error } = useGameStore();
   const navigate = useNavigate();
@@ -26,11 +30,13 @@ export default function Home() {
 
   const goPrevPic = () => {
     if (profilePics.length === 0) return;
+    setAvatarDirection('left');
     setSelectedPicIndex((prev) => (prev - 1 + profilePics.length) % profilePics.length);
   };
 
   const goNextPic = () => {
     if (profilePics.length === 0) return;
+    setAvatarDirection('right');
     setSelectedPicIndex((prev) => (prev + 1) % profilePics.length);
   };
 
@@ -98,7 +104,13 @@ export default function Home() {
                   key={profilePics[selectedPicIndex] || '/logo.png'}
                   src={profilePics[selectedPicIndex] || '/logo.png'}
                   alt="Selected character"
-                  className="card-logo shake-hello"
+                  className={`card-logo shake-hello ${
+                    avatarDirection === 'left'
+                      ? 'avatar-swap-left'
+                      : avatarDirection === 'right'
+                        ? 'avatar-swap-right'
+                        : ''
+                  }`}
                 />
                 <button
                   className="avatar-arrow"
@@ -187,7 +199,13 @@ export default function Home() {
                 key={profilePics[selectedPicIndex] || '/logo.png'}
                 src={profilePics[selectedPicIndex] || '/logo.png'}
                 alt="Selected character"
-                className="card-logo shake-hello"
+                className={`card-logo shake-hello ${
+                  avatarDirection === 'left'
+                    ? 'avatar-swap-left'
+                    : avatarDirection === 'right'
+                      ? 'avatar-swap-right'
+                      : ''
+                }`}
               />
               <button
                 className="avatar-arrow"
