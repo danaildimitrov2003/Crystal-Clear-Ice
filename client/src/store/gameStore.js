@@ -299,9 +299,13 @@ export const useGameStore = create((set, get) => ({
       set({ gameState });
     });
 
-    socket.on('game:phaseChanged', ({ phase, voteResults }) => {
+    socket.on('game:phaseChanged', ({ phase, voteResults, actionVoteStatus }) => {
       set((state) => ({
-        gameState: state.gameState ? { ...state.gameState, phase } : null,
+        gameState: state.gameState ? { 
+          ...state.gameState, 
+          phase,
+          actionVoteStatus: actionVoteStatus || state.gameState.actionVoteStatus
+        } : null,
         voteResults: voteResults || state.voteResults
       }));
     });
