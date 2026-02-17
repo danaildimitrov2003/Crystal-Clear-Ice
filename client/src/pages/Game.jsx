@@ -97,10 +97,30 @@ export default function Game() {
     }
   };
 
+  const isRevealPhase = gameState.phase === GAME_PHASES.THEME_REVEAL || 
+    (gameState.phase === GAME_PHASES.WORD_REVEAL && gameState.myRole !== 'impostor');
+
+  const renderRevealContent = () => {
+    if (gameState.phase === GAME_PHASES.THEME_REVEAL) {
+      return <ThemeReveal category={gameState.category} />;
+    }
+    if (gameState.phase === GAME_PHASES.WORD_REVEAL && gameState.myRole !== 'impostor') {
+      return <WordReveal word={gameState.word} isImpostor={false} category={gameState.category} />;
+    }
+    return null;
+  };
+
   return (
     <div className="game-page page-container">
+      {/* Persistent black overlay across both reveal phases */}
+      <div className={`fullscreen-reveal ${isRevealPhase ? 'active' : ''}`}>
+        {isRevealPhase && renderRevealContent()}
+      </div>
+
       <div className="game-content animate-fade-in">
-        {gameState.phase !== GAME_PHASES.ROLE_REVEAL && (
+        {gameState.phase !== GAME_PHASES.ROLE_REVEAL &&
+         gameState.phase !== GAME_PHASES.THEME_REVEAL &&
+         gameState.phase !== GAME_PHASES.WORD_REVEAL && (
           <div className="game-info-bar card">
             <div className="game-info-item">
               <span className="game-info-label">Category</span>
@@ -118,7 +138,7 @@ export default function Game() {
             </div>
           </div>
         )}
-        {renderPhase()}
+        {!isRevealPhase && renderPhase()}
       </div>
     </div>
   );

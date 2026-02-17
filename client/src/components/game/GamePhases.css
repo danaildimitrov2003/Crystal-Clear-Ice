@@ -48,21 +48,106 @@
   color: var(--warning-yellow);
 }
 
+/* ============ Full-Screen Reveal Animation ============ */
+.fullscreen-reveal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.5s ease-in;
+}
+
+.fullscreen-reveal.active {
+  clip-path: inset(0 0 0 0);
+}
+
+
+
+/* Spinning Words Container */
+.spinning-words {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  gap: 20px;
+}
+
+.reveal-subtitle {
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+/* Mega Word Styling */
+.mega-word {
+  font-size: clamp(3rem, 14vw, 9rem);
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  word-wrap: break-word;
+  max-width: 90vw;
+  transition: opacity 0.06s;
+}
+
+.mega-word.spinning {
+  opacity: 0.85;
+}
+
+.mega-word.landed {
+  color: #ffd700;
+  animation: landPop 0.5s ease-out;
+  text-shadow:
+    0 0 30px rgba(255, 215, 0, 0.6),
+    0 0 60px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes landPop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  60% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 @media (max-width: 600px) {
   .game-timer {
     font-size: 2rem;
   }
-  
+
   .role-name {
     font-size: 1.8rem;
   }
-  
+
   .reveal-value {
     font-size: 1.8rem;
     padding: 10px 20px;
   }
-  
+
   .voting-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mega-word {
+    font-size: clamp(2rem, 11vw, 5rem);
   }
 }
