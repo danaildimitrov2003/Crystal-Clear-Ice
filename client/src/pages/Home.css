@@ -121,8 +121,10 @@
 }
 
 .card-logo {
-  width: 150px;
-  height: auto;
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 12px;
   filter: drop-shadow(0 4px 20px rgba(78, 205, 196, 0.2));
 }
 

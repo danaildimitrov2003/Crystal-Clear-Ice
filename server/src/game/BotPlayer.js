@@ -21,6 +21,7 @@ class BotPlayer {
     this.id = `bot_${id}_${Date.now()}`;
     this.name = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)] + Math.floor(Math.random() * 100);
     this.avatar = BOT_COLORS[Math.floor(Math.random() * BOT_COLORS.length)];
+    this.profilePicIndex = Math.floor(Math.random() * 15); // Random profile pic from 0-14
     this.lobbyId = lobbyId;
     this.isBot = true;
   }

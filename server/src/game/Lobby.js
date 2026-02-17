@@ -36,6 +36,7 @@ class Lobby {
       id: player.id,
       name: player.name,
       avatar: player.avatar || null,
+      profilePicIndex: player.profilePicIndex,
       isHost: player.id === this.hostId,
       isReady: false
     });

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
+import { getProfilePic } from '../../constants/profilePics';
 import './GamePhases.css';
 
 export default function GameOver({ voteResults, gameState, player }) {
@@ -17,12 +18,20 @@ export default function GameOver({ voteResults, gameState, player }) {
 
   return (
     <div className="phase-container game-over-container">
-      <div 
-        className="avatar avatar-large"
-        style={{ backgroundColor: player?.avatar || '#FFD700' }}
-      >
-        {player?.name?.charAt(0).toUpperCase()}
-      </div>
+      {player?.profilePicIndex !== undefined ? (
+        <img 
+          src={getProfilePic(player.profilePicIndex)}
+          alt={player?.name}
+          className="avatar avatar-large"
+        />
+      ) : (
+        <div 
+          className="avatar avatar-large"
+          style={{ backgroundColor: player?.avatar || '#FFD700' }}
+        >
+          {player?.name?.charAt(0).toUpperCase()}
+        </div>
+      )}
 
       {tie ? (
         <>

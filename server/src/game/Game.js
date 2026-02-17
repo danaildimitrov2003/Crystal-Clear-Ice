@@ -224,6 +224,7 @@ class Game {
         id: p.id,
         name: p.name,
         avatar: p.avatar,
+        profilePicIndex: p.profilePicIndex,
         role: p.role,
         clue: p.clue,
         hasVoted: p.vote !== null,

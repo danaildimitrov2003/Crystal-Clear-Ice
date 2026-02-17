@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
+import { profilePics, getProfilePic } from '../constants/profilePics';
 import './Lobby.css';
 
 export default function Lobby() {
@@ -86,12 +87,20 @@ export default function Lobby() {
           {lobby.players.map((p) => (
             <div key={p.id} className="player-card card">
               <div className="player-name-tag">{p.name}</div>
-              <div 
-                className="avatar avatar-large"
-                style={{ backgroundColor: p.avatar || '#FFD700' }}
-              >
-                {p.name?.charAt(0).toUpperCase()}
-              </div>
+              {p.profilePicIndex !== undefined ? (
+                <img 
+                  src={getProfilePic(p.profilePicIndex)} 
+                  alt={p.name}
+                  className="avatar avatar-large"
+                />
+              ) : (
+                <div 
+                  className="avatar avatar-large"
+                  style={{ backgroundColor: p.avatar || '#FFD700' }}
+                >
+                  {p.name?.charAt(0).toUpperCase()}
+                </div>
+              )}
               {p.isHost && <span className="host-badge">Host</span>}
             </div>
           ))}

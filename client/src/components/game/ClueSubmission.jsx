@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
+import { getProfilePic } from '../../constants/profilePics';
 import './GamePhases.css';
 
 export default function ClueSubmission({ gameState, player, timeLeft }) {
@@ -39,12 +40,20 @@ export default function ClueSubmission({ gameState, player, timeLeft }) {
       )}
 
       <div className="current-player-info">
-        <div 
-          className="avatar avatar-large"
-          style={{ backgroundColor: currentPlayer?.avatar || '#FFD700' }}
-        >
-          {currentPlayer?.name?.charAt(0).toUpperCase()}
-        </div>
+        {currentPlayer?.profilePicIndex !== undefined ? (
+          <img 
+            src={getProfilePic(currentPlayer.profilePicIndex)} 
+            alt={currentPlayer?.name}
+            className="avatar avatar-large"
+          />
+        ) : (
+          <div 
+            className="avatar avatar-large"
+            style={{ backgroundColor: currentPlayer?.avatar || '#FFD700' }}
+          >
+            {currentPlayer?.name?.charAt(0).toUpperCase()}
+          </div>
+        )}
         <p className="turn-indicator">
           {isMyTurn ? "It's your turn!" : `${currentPlayer?.name}'s turn`}
         </p>

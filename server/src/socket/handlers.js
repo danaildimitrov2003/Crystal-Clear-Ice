@@ -13,8 +13,8 @@ function setupSocketHandlers(io, gameManager) {
     console.log(`Client connected: ${socket.id}`);
 
     // Player joins with name
-    socket.on('player:join', ({ name, isGuest = true }, callback) => {
-      const session = gameManager.createSession(socket.id, name, isGuest);
+    socket.on('player:join', ({ name, isGuest = true, profilePicIndex = 0 }, callback) => {
+      const session = gameManager.createSession(socket.id, name, isGuest, profilePicIndex);
       console.log(`Player joined: ${name} (${session.id})`);
       if (typeof callback === 'function') {
         callback({ success: true, player: session });

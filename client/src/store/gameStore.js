@@ -36,11 +36,11 @@ export const useGameStore = create((set, get) => ({
   clearError: () => set({ error: null }),
   
   // Join as player
-  joinAsPlayer: async (name, isGuest = true) => {
+  joinAsPlayer: async (name, isGuest = true, profilePicIndex = 0) => {
     set({ isLoading: true, error: null });
     try {
       connectSocket();
-      const response = await emitWithCallback('player:join', { name, isGuest });
+      const response = await emitWithCallback('player:join', { name, isGuest, profilePicIndex });
       set({ player: response.player, isLoading: false });
       get().setupSocketListeners();
       return response;

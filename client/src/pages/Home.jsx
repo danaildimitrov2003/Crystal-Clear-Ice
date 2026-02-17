@@ -1,25 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
+import { profilePics } from '../constants/profilePics';
 import './Home.css';
-
-const profilePics = [
-  '/profilePics/banana.png',
-  '/profilePics/chicken qnis.png',
-  '/profilePics/exeter.png',
-  '/profilePics/katerichok.png',
-  '/profilePics/krasimir.png',
-  '/profilePics/ludacris.png',
-  '/profilePics/nikshata.png',
-  '/profilePics/pameca.png',
-  '/profilePics/pepi.png',
-  '/profilePics/polizei.png',
-  '/profilePics/shoebill.png',
-  '/profilePics/spike.png',
-  '/profilePics/teterev.png',
-  '/profilePics/tony.png',
-  '/profilePics/torbio.png'
-];
 
 export default function Home() {
   const [name, setName] = useState('');
@@ -41,7 +24,7 @@ export default function Home() {
     if (!name.trim()) return;
     
     try {
-      await joinAsPlayer(name.trim(), isGuest);
+      await joinAsPlayer(name.trim(), isGuest, selectedPicIndex);
       navigate('/menu');
     } catch (err) {
       console.error('Failed to join:', err);
@@ -91,7 +74,7 @@ export default function Home() {
                 ›
               </button>
             </div>
-            <p className="card-description">Jump right in as a guest player</p>
+            <p className="card-description">Select your character</p>
           </div>
 
           {/* Main Play Card */}

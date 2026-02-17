@@ -1,3 +1,4 @@
+import { getProfilePic } from '../../constants/profilePics';
 import './GamePhases.css';
 
 export default function RoleReveal({ role, player }) {
@@ -5,12 +6,20 @@ export default function RoleReveal({ role, player }) {
   
   return (
     <div className="phase-container role-reveal">
-      <div 
-        className="avatar avatar-large"
-        style={{ backgroundColor: player?.avatar || '#FFD700' }}
-      >
-        {player?.name?.charAt(0).toUpperCase()}
-      </div>
+      {player?.profilePicIndex !== undefined ? (
+        <img 
+          src={getProfilePic(player.profilePicIndex)}
+          alt={player?.name}
+          className="avatar avatar-large"
+        />
+      ) : (
+        <div 
+          className="avatar avatar-large"
+          style={{ backgroundColor: player?.avatar || '#FFD700' }}
+        >
+          {player?.name?.charAt(0).toUpperCase()}
+        </div>
+      )}
       
       <div className="role-text">
         You are {isImpostor ? 'an' : 'a'}{' '}

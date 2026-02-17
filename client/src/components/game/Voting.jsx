@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
+import { getProfilePic } from '../../constants/profilePics';
 import './GamePhases.css';
 
 export default function Voting({ players, currentPlayerId, timeLeft }) {
@@ -43,12 +44,20 @@ export default function Voting({ players, currentPlayerId, timeLeft }) {
               onClick={() => handleVote(player.id)}
             >
               <span className="player-name-tag">{player.name}</span>
-              <div 
-                className="avatar"
-                style={{ backgroundColor: player.avatar || '#FFD700' }}
-              >
-                {player.name?.charAt(0).toUpperCase()}
-              </div>
+              {player.profilePicIndex !== undefined ? (
+                <img 
+                  src={getProfilePic(player.profilePicIndex)} 
+                  alt={player.name}
+                  className="avatar"
+                />
+              ) : (
+                <div 
+                  className="avatar"
+                  style={{ backgroundColor: player.avatar || '#FFD700' }}
+                >
+                  {player.name?.charAt(0).toUpperCase()}
+                </div>
+              )}
               {player.hasVoted && <span className="voted-badge">Voted</span>}
               {isSelf && <span className="self-badge">(You)</span>}
             </div>

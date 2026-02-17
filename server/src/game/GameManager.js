@@ -11,13 +11,14 @@ class GameManager {
   }
 
   // Session management
-  createSession(socketId, playerName, isGuest = true) {
+  createSession(socketId, playerName, isGuest = true, profilePicIndex = 0) {
     const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const session = {
       id: playerId,
       socketId,
       name: playerName,
       isGuest,
+      profilePicIndex,
       lobbyId: null,
       avatar: this.getRandomAvatar()
     };
