@@ -215,6 +215,25 @@ class GameManager {
     return { ...result, gameState: game.getState(), lobbyId: session.lobbyId, allVoted: game.allVotesSubmitted() };
   }
 
+  submitActionVote(socketId, action) {
+    const session = this.getSession(socketId);
+    if (!session || !session.lobbyId) {
+      return { success: false, error: 'Not in a game' };
+    }
+
+    const game = this.getGame(session.lobbyId);
+    if (!game) {
+      return { success: false, error: 'Game not found' };
+    }
+
+    if (game.phase !== GAME_PHASES.ACTION_CHOICE) {
+      return { success: false, error: 'Not in action choice phase' };
+    }
+
+    const result = game.submitActionVote(session.id, action);
+    return { ...result, gameState: game.getState(), lobbyId: session.lobbyId, allVoted: game.allActionVotesSubmitted() };
+  }
+
   getVoteResults(lobbyId) {
     const game = this.getGame(lobbyId);
     if (!game) return null;
