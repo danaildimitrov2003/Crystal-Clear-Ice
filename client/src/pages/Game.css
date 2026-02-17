@@ -3,6 +3,19 @@
   min-height: 100vh;
 }
 
+.game-page .avatar-large {
+  width: 330px;
+  height: 330px;
+  font-size: 3.8rem;
+}
+
+.game-page .avatar {
+  border-radius: 0;
+  border: none !important;
+  box-shadow: none !important;
+  filter: none;
+}
+
 .game-content {
   width: 100%;
   max-width: 800px;
@@ -147,7 +160,8 @@
 }
 
 .turn-indicator {
-  font-size: 1.1rem;
+  font-size: 1.6rem;
+  font-weight: 700;
   color: var(--text-dark);
   text-align: center;
 }
