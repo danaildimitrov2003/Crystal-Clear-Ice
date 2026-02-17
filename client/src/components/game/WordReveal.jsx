@@ -10,10 +10,12 @@ export default function WordReveal({ word, isImpostor, category }) {
   const indexRef = useRef(0);
   const timeoutRef = useRef(null);
 
+  const finalWord = isImpostor ? '???' : (word?.charAt(0).toUpperCase() + word?.slice(1));
+
   const doSpin = useCallback((step) => {
     const totalSteps = 16;
     if (step >= totalSteps) {
-      setDisplayWord(word?.charAt(0).toUpperCase() + word?.slice(1));
+      setDisplayWord(finalWord);
       setSpinning(false);
       setLanded(true);
       return;
@@ -26,31 +28,16 @@ export default function WordReveal({ word, isImpostor, category }) {
     const nextDelay = 60 + (progress * progress) * 400;
 
     timeoutRef.current = setTimeout(() => doSpin(step + 1), nextDelay);
-  }, [word]);
+  }, [finalWord]);
 
   useEffect(() => {
-    if (isImpostor) return;
-
     timeoutRef.current = setTimeout(() => {
       setSpinning(true);
       doSpin(0);
     }, 500);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [isImpostor, doSpin]);
-
-  // Impostor view (no animation)
-  if (isImpostor) {
-    return (
-      <div className="phase-container reveal-container">
-        <p className="reveal-label">You only know the theme!</p>
-        <div className="reveal-value impostor-hint">
-          ???
-        </div>
-        <p className="hint-text">Try to figure out the word from others' clues</p>
-      </div>
-    );
-  }
+  }, [doSpin]);
 
   if (!spinning && !landed) return null;
 
@@ -59,9 +46,12 @@ export default function WordReveal({ word, isImpostor, category }) {
   return (
     <div className="spinning-words">
       <div className="reveal-subtitle">{categoryLabel}</div>
-      <div className={`mega-word ${spinning ? 'spinning' : ''} ${landed ? 'landed' : ''}`}>
+      <div className={`mega-word ${spinning ? 'spinning' : ''} ${landed ? 'landed' : ''} ${isImpostor && landed ? 'impostor-landed' : ''}`}>
         {displayWord}
       </div>
+      {isImpostor && landed && (
+        <div className="reveal-impostor-hint">You're the impostor — figure it out!</div>
+      )}
     </div>
   );
 }
