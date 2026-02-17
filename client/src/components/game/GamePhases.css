@@ -10,6 +10,11 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
+.active-turn-avatar {
+  animation: turnAvatarJiggle 4.9s ease-in-out infinite;
+  transform-origin: center;
+}
+
 .role-reveal {
   position: relative;
   overflow: hidden;
@@ -63,6 +68,48 @@
   100% {
     transform: translate3d(var(--drift), 120vh, 0) rotate(540deg) scale(1.2);
     opacity: 0;
+  }
+}
+
+@keyframes turnAvatarJiggle {
+  0%, 8%, 32%, 58%, 82%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  10% {
+    transform: translate3d(-2px, 1px, 0) rotate(-1.6deg);
+  }
+  12% {
+    transform: translate3d(2px, -1px, 0) rotate(1.8deg);
+  }
+  14% {
+    transform: translate3d(-1px, 0, 0) rotate(-1deg);
+  }
+  35% {
+    transform: translate3d(2px, 1px, 0) rotate(1.2deg);
+  }
+  37% {
+    transform: translate3d(-2px, -1px, 0) rotate(-1.4deg);
+  }
+  39% {
+    transform: translate3d(1px, 0, 0) rotate(0.8deg);
+  }
+  60% {
+    transform: translate3d(-2px, -1px, 0) rotate(-1.5deg);
+  }
+  62% {
+    transform: translate3d(2px, 1px, 0) rotate(1.5deg);
+  }
+  64% {
+    transform: translate3d(-1px, 0, 0) rotate(-0.8deg);
+  }
+  84% {
+    transform: translate3d(1px, -1px, 0) rotate(1deg);
+  }
+  86% {
+    transform: translate3d(-1px, 1px, 0) rotate(-1.2deg);
+  }
+  88% {
+    transform: translate3d(0, 0, 0) rotate(0.4deg);
   }
 }
 

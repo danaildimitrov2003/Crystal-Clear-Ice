@@ -44,11 +44,11 @@ export default function ClueSubmission({ gameState, player, timeLeft }) {
           <img 
             src={getProfilePic(currentPlayer.profilePicIndex)} 
             alt={currentPlayer?.name}
-            className="avatar avatar-large"
+            className="avatar avatar-large active-turn-avatar"
           />
         ) : (
           <div 
-            className="avatar avatar-large"
+            className="avatar avatar-large active-turn-avatar"
             style={{ backgroundColor: currentPlayer?.avatar || '#FFD700' }}
           >
             {currentPlayer?.name?.charAt(0).toUpperCase()}
