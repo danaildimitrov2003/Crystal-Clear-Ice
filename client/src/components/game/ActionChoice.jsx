@@ -69,7 +69,7 @@ export default function ActionChoice({ gameState, player, timeLeft }) {
           <div className="vote-count-label">Start Vote</div>
           <div className="vote-bar-container">
             <div 
-              className="vote-bar vote-bar" 
+              className="vote-bar start-vote-bar" 
               style={{ width: `${votePercentage || 0}%` }}
             >
               {votePercentage > 5 && <span>{votePercentage}%</span>}
@@ -107,14 +107,14 @@ export default function ActionChoice({ gameState, player, timeLeft }) {
       {/* Action Buttons */}
       <div className="action-choice-buttons">
         <button 
-          className={`btn btn-continue ${playerVote === 'continue' ? 'selected' : ''} ${isSubmitting && selectedAction === 'continue' ? 'disabled' : ''}`}
+          className={`action-choice-btn continue-action-btn ${playerVote === 'continue' ? 'selected' : ''}`}
           onClick={() => handleVote('continue')}
           disabled={isSubmitting}
         >
           {playerVote === 'continue' ? '✓ Continue' : 'Continue'}
         </button>
         <button 
-          className={`btn btn-vote ${playerVote === 'start_vote' ? 'selected' : ''} ${isSubmitting && selectedAction === 'start_vote' ? 'disabled' : ''}`}
+          className={`action-choice-btn vote-action-btn ${playerVote === 'start_vote' ? 'selected' : ''}`}
           onClick={() => handleVote('start_vote')}
           disabled={isSubmitting}
         >
