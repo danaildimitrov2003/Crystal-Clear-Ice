@@ -54,6 +54,7 @@ class Game {
     this.word = null;
     this.impostorId = null;
     this.clues = [];
+    this.allCluesHistory = [];
     this.votes = {};
     this.actionVotes = {};
     this.phaseTimer = null;
@@ -139,7 +140,8 @@ class Game {
         // Determine which action won based on votes
         const actionResult = this.getActionVoteResult();
         if (actionResult.action === 'continue') {
-          // Continue with same round, just reset clues/votes
+          // Continue to next round - increment and reset state
+          this.round++;
           this.phase = GAME_PHASES.CLUE_SUBMISSION;
           this.currentPlayerIndex = 0;
           this.clues = [];
@@ -151,6 +153,7 @@ class Game {
             p.actionVote = null;
           });
           this.actionVotes = {};
+          console.log(`[Game ${this.id}] Round incremented to ${this.round} (continue vote)`);
         } else {
           // Start voting
           this.phase = GAME_PHASES.VOTING;
@@ -164,6 +167,7 @@ class Game {
         this.phase = GAME_PHASES.GAME_OVER;
         break;
     }
+    console.log(`[Game ${this.id}] Phase: ${this.phase}, Round: ${this.round}, allCluesHistory.length: ${this.allCluesHistory.length}`);
     return this.getState();
   }
 
@@ -177,7 +181,25 @@ class Game {
     }
 
     player.clue = clue;
-    this.clues.push({ playerId, playerName: player.name, clue });
+    const clueEntry = { playerId, playerName: player.name, clue };
+    this.clues.push(clueEntry);
+    
+    // DEBUG: Show current state
+    console.log(`[Game ${this.id}] submitClue called - Player: ${player.name} (ID: ${playerId}), Current Round: ${this.round}, Clue: "${clue}"`);
+    console.log(`[Game ${this.id}] Current allCluesHistory before addition:`, JSON.stringify(this.allCluesHistory, null, 2));
+    
+    // Prevent duplicates: only add to history if this exact clue from this player in this round doesn't exist
+    const isDuplicate = this.allCluesHistory.some(
+      c => c.playerId === playerId && c.round === this.round && c.clue === clue
+    );
+    
+    if (!isDuplicate) {
+      this.allCluesHistory.push({ ...clueEntry, round: this.round });
+      console.log(`[Game ${this.id}] ✓ Clue ADDED - Player: ${player.name}, Round: ${this.round}, Total history count: ${this.allCluesHistory.length}`);
+      console.log(`[Game ${this.id}] allCluesHistory after addition:`, JSON.stringify(this.allCluesHistory, null, 2));
+    } else {
+      console.log(`[Game ${this.id}] ✗ DUPLICATE clue prevented - Player: ${player.name}, Round: ${this.round}`);
+    }
     
     return { success: true };
   }
@@ -352,6 +374,7 @@ class Game {
         actionVote: p.actionVote
       })),
       clues: this.clues,
+      allCluesHistory: this.allCluesHistory,
       phaseEndTime: this.phaseEndTime,
       actionVoteStatus: this.phase === GAME_PHASES.ACTION_CHOICE ? this.getActionVoteStatus() : null
     };
@@ -376,6 +399,9 @@ class Game {
   }
 
   startRound() {
+    console.log(`[Game ${this.id}] ============ STARTING ROUND ${this.round + 1} ============`);
+    console.log(`[Game ${this.id}] allCluesHistory at startRound (before increment):`, JSON.stringify(this.allCluesHistory, null, 2));
+    
     // Select new random word and category
     const { category, word } = this.getRandomCategoryAndWord();
     this.category = category;
@@ -401,13 +427,15 @@ class Game {
     
     this.impostorId = this.players[impostorIndex].id;
     
-    console.log(`[Round ${this.round + 1}] Impostor assigned: ${this.players[impostorIndex].name} (ID: ${this.impostorId})`);
-    console.log(`[Round ${this.round + 1}] All roles:`, this.players.map(p => `${p.name}: ${p.role}`).join(', '));
+    console.log(`[Game ${this.id}] Round ${this.round + 1} Impostor: ${this.players[impostorIndex].name}`);
 
     // Randomize turn order
     this.players = this.shuffleArray([...this.players]);
     
     this.round++;
+    console.log(`[Game ${this.id}] ✓ Round incremented to ${this.round}`);
+    console.log(`[Game ${this.id}] allCluesHistory after round increment:`, JSON.stringify(this.allCluesHistory, null, 2));
+    
     this.currentPlayerIndex = 0;
     this.clues = [];
     this.votes = {};

@@ -252,8 +252,22 @@ class GameManager {
 
   startNewRound(lobbyId) {
     const game = this.getGame(lobbyId);
-    if (!game) return null;
-    return game.startRound();
+    const lobby = this.lobbies.get(lobbyId);
+    
+    if (!lobby) return null;
+    
+    // Delete the old game and create a brand new one with fresh state
+    this.games.delete(game.id);
+    
+    const newGame = new Game(lobby.id, lobby.players, lobby.customWords);
+    newGame.start();
+    
+    this.games.set(newGame.id, newGame);
+    lobby.gameId = newGame.id;
+    
+    console.log(`[GameManager] New game created (old game ${game.id} deleted). New game ID: ${newGame.id}`);
+    
+    return newGame.getState();
   }
 
   endGame(lobbyId) {

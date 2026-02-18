@@ -87,6 +87,8 @@ export default function Game() {
             players={gameState.players}
             currentPlayerId={player?.id}
             timeLeft={timeLeft}
+            allCluesHistory={gameState.allCluesHistory}
+            currentRound={gameState.round}
           />
         );
       
