@@ -1,14 +1,23 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './GamePhases.css';
 
-const SAMPLE_CATEGORIES = ['Animals', 'Food', 'Sports', 'Technology', 'Nature', 'Travel', 'Music', 'Art'];
+const FALLBACK_CATEGORIES = ['Animals', 'Food', 'Sports', 'Technology', 'Nature', 'Travel', 'Music', 'Art'];
 
-export default function ThemeReveal({ category }) {
+export default function ThemeReveal({ category, allWords }) {
   const [spinning, setSpinning] = useState(false);
   const [landed, setLanded] = useState(false);
   const [displayWord, setDisplayWord] = useState('');
   const indexRef = useRef(0);
   const timeoutRef = useRef(null);
+
+  // Use actual categories from game data, falling back to defaults
+  const spinCategories = useMemo(() => {
+    if (allWords && typeof allWords === 'object') {
+      const cats = Object.keys(allWords).filter(c => c !== category);
+      if (cats.length >= 3) return cats;
+    }
+    return FALLBACK_CATEGORIES;
+  }, [allWords, category]);
 
   const doSpin = useCallback((step) => {
     const totalSteps = 16;
@@ -19,8 +28,8 @@ export default function ThemeReveal({ category }) {
       return;
     }
 
-    indexRef.current = (indexRef.current + 1) % SAMPLE_CATEGORIES.length;
-    setDisplayWord(SAMPLE_CATEGORIES[indexRef.current]);
+    indexRef.current = (indexRef.current + 1) % spinCategories.length;
+    setDisplayWord(spinCategories[indexRef.current]);
 
     const progress = step / totalSteps;
     const nextDelay = 60 + (progress * progress) * 400;

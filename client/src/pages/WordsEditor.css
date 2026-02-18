@@ -103,7 +103,7 @@
   background: rgba(255, 255, 255, 0.4) !important;
   border: 2px solid rgba(128, 222, 234, 0.4) !important;
   border-radius: 8px;
-  color: var(--text-dark) !important;
+  color: #0e3d52 !important;
   font-weight: 500;
   font-size: 1.3rem;
   font-family: 'Papyrus', fantasy, sans-serif !important;
@@ -113,6 +113,13 @@
   outline: none;
   border-color: var(--ice-medium) !important;
   background: rgba(255, 255, 255, 0.6) !important;
+  color: #0e3d52 !important;
+}
+
+.category-input::placeholder,
+.word-input::placeholder {
+  color: #1a6b8a !important;
+  opacity: 0.6;
 }
 
 .words-list {
@@ -134,7 +141,7 @@
   background: rgba(255, 255, 255, 0.4) !important;
   border: 2px solid rgba(128, 222, 234, 0.3) !important;
   border-radius: 6px;
-  color: var(--text-dark) !important;
+  color: #0e3d52 !important;
   font-size: 0.95rem;
   font-family: 'Papyrus', fantasy, sans-serif !important;
 }
@@ -143,6 +150,7 @@
   outline: none;
   border-color: var(--ice-medium) !important;
   background: rgba(255, 255, 255, 0.6) !important;
+  color: #0e3d52 !important;
 }
 
 .btn-small {

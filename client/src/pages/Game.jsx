@@ -50,10 +50,10 @@ export default function Game() {
         return <RoleReveal role={gameState.myRole} player={player} />;
       
       case GAME_PHASES.THEME_REVEAL:
-        return <ThemeReveal category={gameState.category} />;
+        return <ThemeReveal category={gameState.category} allWords={lobby?.customWords || lobby?.currentWords} />;
       
       case GAME_PHASES.WORD_REVEAL:
-        return <WordReveal word={gameState.word} isImpostor={gameState.myRole === 'impostor'} />;
+        return <WordReveal word={gameState.word} isImpostor={gameState.myRole === 'impostor'} allWords={lobby?.customWords || lobby?.currentWords} category={gameState.category} />;
       
       case GAME_PHASES.CLUE_SUBMISSION:
         return (
@@ -112,10 +112,10 @@ export default function Game() {
 
   const renderRevealContent = () => {
     if (gameState.phase === GAME_PHASES.THEME_REVEAL) {
-      return <ThemeReveal category={gameState.category} />;
+      return <ThemeReveal category={gameState.category} allWords={lobby?.customWords || lobby?.currentWords} />;
     }
     if (gameState.phase === GAME_PHASES.WORD_REVEAL) {
-      return <WordReveal word={gameState.word} isImpostor={gameState.myRole === 'impostor'} category={gameState.category} />;
+      return <WordReveal word={gameState.word} isImpostor={gameState.myRole === 'impostor'} category={gameState.category} allWords={lobby?.customWords || lobby?.currentWords} />;
     }
     return null;
   };

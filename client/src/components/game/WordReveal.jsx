@@ -1,14 +1,26 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './GamePhases.css';
 
-const SAMPLE_WORDS = ['Mystery', 'Secret', 'Hidden', 'Unknown', 'Enigma', 'Puzzle', 'Riddle', 'Cipher'];
+const FALLBACK_WORDS = ['Mystery', 'Secret', 'Hidden', 'Unknown', 'Enigma', 'Puzzle', 'Riddle', 'Cipher'];
 
-export default function WordReveal({ word, isImpostor, category }) {
+export default function WordReveal({ word, isImpostor, category, allWords }) {
   const [spinning, setSpinning] = useState(false);
   const [landed, setLanded] = useState(false);
   const [displayWord, setDisplayWord] = useState('');
   const indexRef = useRef(0);
   const timeoutRef = useRef(null);
+
+  // Use actual words from game data, falling back to defaults
+  const spinWords = useMemo(() => {
+    if (allWords && typeof allWords === 'object') {
+      // Gather words from all categories, excluding the actual word
+      const words = Object.values(allWords)
+        .flat()
+        .filter(w => w !== word);
+      if (words.length >= 3) return words;
+    }
+    return FALLBACK_WORDS;
+  }, [allWords, word]);
 
   const finalWord = isImpostor ? '???' : (word?.charAt(0).toUpperCase() + word?.slice(1));
 
@@ -21,8 +33,8 @@ export default function WordReveal({ word, isImpostor, category }) {
       return;
     }
 
-    indexRef.current = (indexRef.current + 1) % SAMPLE_WORDS.length;
-    setDisplayWord(SAMPLE_WORDS[indexRef.current]);
+    indexRef.current = (indexRef.current + 1) % spinWords.length;
+    setDisplayWord(spinWords[indexRef.current]);
 
     const progress = step / totalSteps;
     const nextDelay = 60 + (progress * progress) * 400;

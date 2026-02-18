@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { profilePics, getProfilePic } from '../constants/profilePics';
 import './Lobby.css';
 import './WordsEditor.css';
+
+// Counter for generating stable category keys
+let nextCategoryKeyId = 0;
 
 export default function Lobby() {
   const navigate = useNavigate();
@@ -11,6 +14,7 @@ export default function Lobby() {
   const fileInputRef = useRef(null);
   const modalRef = useRef(null);
   const modalContentRef = useRef(null);
+  const categoryKeysRef = useRef({});
   const [uploadError, setUploadError] = useState(null);
   const [showWordsEditor, setShowWordsEditor] = useState(false);
   const [editableWords, setEditableWords] = useState({});
@@ -114,6 +118,11 @@ export default function Lobby() {
         throw new Error('JSON must contain categories with word arrays. Example: { "animals": ["cat", "dog"], "food": ["pizza", "burger"] }');
       }
       await uploadCustomWords(data);
+      // Assign stable keys for uploaded categories
+      categoryKeysRef.current = {};
+      Object.keys(data).forEach(name => {
+        categoryKeysRef.current[name] = `cat-${nextCategoryKeyId++}`;
+      });
       setEditableWords(data);
       setUploadError(null);
     } catch (err) {
@@ -130,7 +139,13 @@ export default function Lobby() {
   const openWordsEditor = () => {
     // Initialize editable words from lobby's custom words or lobby's current words
     const initialWords = lobby?.customWords || lobby?.currentWords || {};
-    setEditableWords(JSON.parse(JSON.stringify(initialWords)));
+    const cloned = JSON.parse(JSON.stringify(initialWords));
+    // Assign stable keys for all existing categories
+    categoryKeysRef.current = {};
+    Object.keys(cloned).forEach(name => {
+      categoryKeysRef.current[name] = `cat-${nextCategoryKeyId++}`;
+    });
+    setEditableWords(cloned);
     setShowWordsEditor(true);
   };
 
@@ -169,6 +184,7 @@ export default function Lobby() {
 
   const addCategory = () => {
     const newCategoryName = `category${Object.keys(editableWords).length + 1}`;
+    categoryKeysRef.current[newCategoryName] = `cat-${nextCategoryKeyId++}`;
     setEditableWords(prev => ({
       [newCategoryName]: [''],
       ...prev
@@ -176,6 +192,7 @@ export default function Lobby() {
   };
 
   const removeCategory = (categoryName) => {
+    delete categoryKeysRef.current[categoryName];
     setEditableWords(prev => {
       const updated = { ...prev };
       delete updated[categoryName];
@@ -205,11 +222,16 @@ export default function Lobby() {
   };
 
   const updateCategoryName = (oldName, newName) => {
-    if (!newName.trim() || newName === oldName) return;
+    if (newName === oldName) return;
+    // Update stable key mapping
+    categoryKeysRef.current[newName] = categoryKeysRef.current[oldName];
+    delete categoryKeysRef.current[oldName];
+    // Rebuild object preserving insertion order
     setEditableWords(prev => {
-      const updated = { ...prev };
-      updated[newName] = updated[oldName];
-      delete updated[oldName];
+      const updated = {};
+      for (const [key, val] of Object.entries(prev)) {
+        updated[key === oldName ? newName : key] = val;
+      }
       return updated;
     });
   };
@@ -369,7 +391,7 @@ export default function Lobby() {
                   <p className="no-words">No words yet. Add a category to start.</p>
                 ) : (
                   Object.entries(editableWords).map(([categoryName, words]) => (
-                    <div key={categoryName} className="category-section">
+                    <div key={categoryKeysRef.current[categoryName] || categoryName} className="category-section">
                       <div className="category-header">
                         <input
                           type="text"
