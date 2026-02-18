@@ -440,8 +440,15 @@ function startPhaseTimer(io, gameManager, lobbyId) {
   const game = gameManager.getGame(lobbyId);
   if (!game) return;
 
-  const duration = PHASE_DURATIONS[game.phase.toUpperCase()] || PHASE_DURATIONS[game.phase];
+  let duration = PHASE_DURATIONS[game.phase.toUpperCase()] || PHASE_DURATIONS[game.phase];
   if (!duration) return;
+
+  // For vote results, compute dynamic duration: reveal animation + 10s viewing time
+  if (game.phase === GAME_PHASES.VOTE_RESULTS) {
+    const voterCount = game.players.filter(p => p.vote).length;
+    const revealTime = (voterCount - 1) * 450 + 500; // stagger + animation
+    duration = Math.max(duration, revealTime + 5000);
+  }
 
   // Set the phase end time
   game.phaseEndTime = Date.now() + duration;

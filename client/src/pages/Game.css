@@ -1,6 +1,7 @@
 .game-page {
   padding: 20px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .game-page .avatar-large {
@@ -306,51 +307,129 @@
 
 /* Vote results */
 .vote-results-container {
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-}
-
-.votes-visualization {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-}
-
-.votes-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.voter-row {
-  display: flex;
-  gap: 16px;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 24px;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  z-index: 90;
 }
 
-.voter-card {
+/* Horizontal strip of vote pairs */
+.vr-strip {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 8px 0;
+}
+
+/* Each voter→voted-for pair */
+.vr-pair {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  opacity: 0;
+  animation: vrReveal 0.5s ease forwards;
 }
 
-.vote-arrow {
-  font-size: 2rem;
-  color: var(--text-dark);
+@keyframes vrReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(12px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-.voted-for-row {
+/* Voter avatar (top) */
+.vote-results-container .vr-avatar-small {
+  width: 12.5rem;
+  height: 12.5rem;
+  font-size: 3rem;
+}
+
+/* Voted-for avatar (bottom) */
+.vote-results-container .vr-avatar-large {
+  width: 12.5rem;
+  height: 12.5rem;
+  font-size: 3rem;
+}
+
+/* Arrow between avatars */
+.vr-arrow {
   display: flex;
-  gap: 16px;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  line-height: 0;
+}
+
+/* Name label under/above avatar */
+.vr-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: center;
+  max-width: 13rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .vr-strip {
+    gap: 1.2rem;
+  }
+  .vote-results-container .vr-avatar-small {
+    width: 7rem;
+    height: 7rem;
+    font-size: 1.8rem;
+  }
+  .vote-results-container .vr-avatar-large {
+    width: 7rem;
+    height: 7rem;
+    font-size: 1.8rem;
+  }
+  .vr-name {
+    font-size: 0.85rem;
+    max-width: 8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .vr-strip {
+    gap: 0.8rem;
+  }
+  .vote-results-container .vr-avatar-small {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.2rem;
+  }
+  .vote-results-container .vr-avatar-large {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.2rem;
+  }
+  .vr-name {
+    font-size: 0.75rem;
+    max-width: 6rem;
+  }
 }
 
 /* Game over */
