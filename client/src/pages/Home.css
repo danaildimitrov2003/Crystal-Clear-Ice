@@ -288,6 +288,32 @@
   margin: 0;
 }
 
+/* Save Character Button */
+.save-pic-btn {
+  margin: 4px auto 0;
+  padding: 6px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid rgba(78, 205, 196, 0.4);
+  background: rgba(78, 205, 196, 0.12);
+  color: rgba(200, 230, 245, 0.9);
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s ease, color 0.25s ease;
+}
+
+.save-pic-btn:hover {
+  background: rgba(78, 205, 196, 0.25);
+  border-color: rgba(78, 205, 196, 0.6);
+  transform: scale(1.04);
+}
+
+.save-pic-btn.saved {
+  background: rgba(78, 205, 196, 0.22);
+  border-color: rgba(78, 205, 196, 0.6);
+  color: #4ecdc4;
+}
+
 /* Play Form */
 .play-form {
   flex: 1;

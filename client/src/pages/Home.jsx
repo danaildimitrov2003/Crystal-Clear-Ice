@@ -5,34 +5,54 @@ import { profilePics } from '../constants/profilePics';
 import './Home.css';
 
 const NAME_COOKIE_KEY = 'cci_player_name';
+const PIC_COOKIE_KEY = 'cci_player_pic';
 
-const getSavedNameFromCookie = () => {
-  if (typeof document === 'undefined') return '';
-
+const getCookieValue = (key) => {
+  if (typeof document === 'undefined') return null;
   const cookie = document.cookie
     .split('; ')
-    .find((entry) => entry.startsWith(`${NAME_COOKIE_KEY}=`));
-
-  if (!cookie) return '';
-
+    .find((entry) => entry.startsWith(`${key}=`));
+  if (!cookie) return null;
   try {
     return decodeURIComponent(cookie.split('=').slice(1).join('='));
   } catch {
-    return '';
+    return null;
   }
 };
 
-const saveNameToCookie = (value) => {
+const setCookieValue = (key, value) => {
   if (typeof document === 'undefined') return;
-  document.cookie = `${NAME_COOKIE_KEY}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
+  document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
+};
+
+const getSavedNameFromCookie = () => getCookieValue(NAME_COOKIE_KEY) || '';
+const saveNameToCookie = (value) => setCookieValue(NAME_COOKIE_KEY, value);
+
+const getSavedPicFromCookie = () => {
+  try {
+    const val = localStorage.getItem(PIC_COOKIE_KEY);
+    if (val === null) return null;
+    const num = parseInt(val, 10);
+    return isNaN(num) ? null : num;
+  } catch {
+    return null;
+  }
+};
+const savePicToCookie = (index) => {
+  try {
+    localStorage.setItem(PIC_COOKIE_KEY, String(index));
+  } catch {}
 };
 
 export default function Home() {
   const [name, setName] = useState(() => getSavedNameFromCookie());
   const [selectedPicIndex, setSelectedPicIndex] = useState(() => {
+    const saved = getSavedPicFromCookie();
+    if (saved !== null && saved >= 0 && saved < profilePics.length) return saved;
     if (profilePics.length === 0) return 0;
     return Math.floor(Math.random() * profilePics.length);
   });
+  const [picSaved, setPicSaved] = useState(false);
   const [avatarDirection, setAvatarDirection] = useState(null);
   const [isAudioOpen, setIsAudioOpen] = useState(false);
   const [searchParams] = useSearchParams();
@@ -63,22 +83,29 @@ export default function Home() {
   const goPrevPic = () => {
     if (profilePics.length === 0) return;
     setAvatarDirection('left');
+    setPicSaved(false);
     setSelectedPicIndex((prev) => (prev - 1 + profilePics.length) % profilePics.length);
   };
 
   const goNextPic = () => {
     if (profilePics.length === 0) return;
     setAvatarDirection('right');
+    setPicSaved(false);
     setSelectedPicIndex((prev) => (prev + 1) % profilePics.length);
+  };
+
+  const handleSavePic = () => {
+    savePicToCookie(selectedPicIndex);
+    setPicSaved(true);
+    // Clear any legacy cookie-based value
+    document.cookie = `${PIC_COOKIE_KEY}=; path=/; max-age=0`;
   };
 
   const handleAction = async (path) => {
     if (!name.trim()) return;
 
     try {
-      if (!player) {
-        await joinAsPlayer(name.trim(), true, selectedPicIndex);
-      }
+      await joinAsPlayer(name.trim(), true, selectedPicIndex);
       navigate(safeRedirect || path);
     } catch (err) {
       console.error('Failed to join:', err);
@@ -89,9 +116,7 @@ export default function Home() {
     if (!name.trim() || !inviteCode) return;
 
     try {
-      if (!player) {
-        await joinAsPlayer(name.trim(), true, selectedPicIndex);
-      }
+      await joinAsPlayer(name.trim(), true, selectedPicIndex);
       const response = await joinLobbyByCode(inviteCode);
       navigate(`/lobby/${response.lobby.code}`, { replace: true });
     } catch (err) {
@@ -200,6 +225,13 @@ export default function Home() {
                   ›
                 </button>
               </div>
+              <button
+                className={`btn save-pic-btn ${picSaved ? 'saved' : ''}`}
+                onClick={handleSavePic}
+                type="button"
+              >
+                {picSaved ? '✓ Saved' : 'Save'}
+              </button>
 
               <div className="play-form">
                 <input
@@ -265,7 +297,7 @@ export default function Home() {
         <div className="home-grid">
           {/* Guest Play Card */}
           <div className="home-card card animate-fade-in">
-            <h2 className="card-title">Quick Play</h2>
+            <h2 className="card-title">Select your character</h2>
             <div className="guest-avatar">
               <button
                 className="avatar-arrow"
@@ -298,7 +330,13 @@ export default function Home() {
                 ›
               </button>
             </div>
-            <p className="card-description">Select your character</p>
+            <button
+              className={`btn save-pic-btn ${picSaved ? 'saved' : ''}`}
+              onClick={handleSavePic}
+              type="button"
+            >
+              {picSaved ? '✓ Saved' : 'Save'}
+            </button>
           </div>
 
           {/* Main Play Card */}
