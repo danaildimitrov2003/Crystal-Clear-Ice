@@ -539,3 +539,411 @@
     font-size: 1.8rem;
   }
 }
+
+/* ==========================================================
+   GAME OVER – staged reveal & animations
+   ========================================================== */
+
+.go-animated {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  overflow: visible;
+  position: relative;
+}
+
+/* ─── generic reveal helpers ─── */
+.go-reveal {
+  animation: goFadeIn 0.6s ease-out both;
+}
+
+.go-slide-up {
+  animation: goSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes goFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes goSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── Avatars ─── */
+.go-avatars {
+  display: flex;
+  justify-content: center;
+}
+
+.go-single-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.go-avatar-pop {
+  animation: goAvatarPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes goAvatarPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.12) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.go-tied-avatars {
+  display: flex;
+  gap: 28px;
+  align-items: flex-end;
+}
+
+.go-tied-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: goAvatarPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.go-avatar-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-light);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* ─── Text glow ─── */
+.go-text-glow {
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.25), 0 2px 6px rgba(0,0,0,0.35);
+}
+
+/* ─── Slot machine ─── */
+.go-slot-machine {
+  text-align: center;
+  margin: 8px 0;
+}
+
+.go-slot-label {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: rgba(224, 247, 250, 0.8);
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+}
+
+.go-slot-name {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  color: #fff;
+  padding: 10px 28px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.15);
+  min-width: 200px;
+  display: inline-block;
+  transition: color 0.12s;
+}
+
+.go-slot-spinning {
+  animation: goSlotFlicker 0.12s steps(2, end) infinite;
+}
+
+.go-slot-landed {
+  color: var(--impostor-red, #FF4444);
+  animation: goSlotLand 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  border-color: var(--impostor-red, #FF4444);
+  text-shadow: 0 0 18px rgba(255, 68, 68, 0.6);
+  box-shadow: 0 0 30px rgba(255, 68, 68, 0.25);
+}
+
+@keyframes goSlotFlicker {
+  0% { opacity: 0.85; transform: translateY(-1px); }
+  100% { opacity: 1; transform: translateY(1px); }
+}
+
+@keyframes goSlotLand {
+  0% { transform: scale(1.2); }
+  40% { transform: scale(0.92); }
+  70% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* ─── Result text ─── */
+.go-result {
+  text-align: center;
+}
+
+/* ─── Impostor reveal card ─── */
+.go-impostor-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 4px 0;
+}
+
+.go-impostor-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 28px;
+  background: linear-gradient(135deg, rgba(255, 68, 68, 0.12), rgba(255, 68, 68, 0.04));
+  border: 1.5px solid rgba(255, 68, 68, 0.3);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(255, 68, 68, 0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.go-impostor-avatar {
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px;
+  border: 3px solid var(--impostor-red, #FF4444);
+  box-shadow: 0 0 18px rgba(255, 68, 68, 0.35);
+  border-radius: 50%;
+}
+
+.go-impostor-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.go-impostor-card-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(224, 247, 250, 0.6);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.go-impostor-card-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--impostor-red, #FF4444);
+  text-shadow: 0 0 14px rgba(255, 68, 68, 0.4);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Suspense text ─── */
+.go-winner-suspense {
+  text-align: center;
+  margin: 12px 0;
+}
+
+.go-suspense-text {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  color: rgba(224, 247, 250, 0.9);
+  animation: goPulseGlow 1.2s ease-in-out infinite alternate;
+  letter-spacing: 0.06em;
+}
+
+@keyframes goPulseGlow {
+  from {
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+    opacity: 0.85;
+  }
+  to {
+    text-shadow: 0 0 24px rgba(255, 255, 255, 0.55), 0 0 48px rgba(255, 215, 0, 0.2);
+    opacity: 1;
+  }
+}
+
+/* ─── Winner reveal ─── */
+.go-winner-reveal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  margin: 12px 0;
+}
+
+.go-winner-sentence {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.go-winner-prefix {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 500;
+  color: rgba(224, 247, 250, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  animation: goFadeIn 0.5s ease-out both;
+}
+
+.go-winner-text {
+  font-size: clamp(2.8rem, 10vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  animation: goWinnerExplode 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  position: relative;
+}
+
+.go-winner-detectives {
+  color: #FFD700;
+  text-shadow:
+    0 0 20px rgba(255, 215, 0, 0.7),
+    0 0 60px rgba(255, 215, 0, 0.4),
+    0 0 100px rgba(255, 215, 0, 0.2),
+    0 4px 0 rgba(180, 140, 0, 0.4);
+}
+
+.go-winner-impostor {
+  color: #FF4444;
+  text-shadow:
+    0 0 20px rgba(255, 68, 68, 0.7),
+    0 0 60px rgba(255, 68, 68, 0.4),
+    0 0 100px rgba(255, 68, 68, 0.2),
+    0 4px 0 rgba(180, 20, 20, 0.4);
+}
+
+@keyframes goWinnerExplode {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-10deg);
+    filter: blur(12px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25) rotate(3deg);
+    filter: blur(0);
+  }
+  70% {
+    transform: scale(0.92) rotate(-1deg);
+  }
+  85% {
+    transform: scale(1.06) rotate(0.5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* ─── Particle burst ─── */
+.go-particle-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+}
+
+.go-particle {
+  position: absolute;
+  left: var(--px);
+  top: 50%;
+  width: var(--size);
+  height: var(--size);
+  opacity: 0;
+  animation: goParticleExplode var(--dur) ease-out var(--delay) both;
+}
+
+.go-particle-circle {
+  border-radius: 50%;
+}
+
+.go-particle-square {
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+@keyframes goParticleExplode {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate(
+        calc((var(--px) - 50%) * var(--speed) * 0.8),
+        calc((var(--speed) - 3.5) * 80px)
+      )
+      scale(0.2)
+      rotate(720deg);
+  }
+}
+
+/* ─── Confetti rain ─── */
+.go-confetti-rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.go-confetti-piece {
+  position: absolute;
+  top: -12px;
+  left: var(--cl);
+  width: var(--csize);
+  height: calc(var(--csize) * 1.6);
+  border-radius: 2px;
+  opacity: 0;
+  animation: goConfettiFall var(--cdur) ease-in var(--cd) both infinite;
+  transform: rotate(var(--crot));
+}
+
+@keyframes goConfettiFall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0) rotate(var(--crot)) scale(0.8);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(105vh) translateX(var(--cdrift)) rotate(calc(var(--crot) + 540deg)) scale(0.4);
+  }
+}
+
+/* ─── Footer / buttons ─── */
+.go-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ─── Mobile tweaks ─── */
+@media (max-width: 600px) {
+  .go-tied-avatars {
+    gap: 14px;
+  }
+
+  .go-winner-text {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+  }
+
+  .go-slot-name {
+    font-size: clamp(1.6rem, 6vw, 2.5rem);
+    min-width: 140px;
+  }
+}

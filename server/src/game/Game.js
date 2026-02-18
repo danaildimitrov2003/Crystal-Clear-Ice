@@ -279,35 +279,43 @@ class Game {
   }
 
   getVoteResults() {
-    // Find player with most votes
+    // Find player(s) with most votes
     let maxVotes = 0;
-    let votedOut = null;
-    let tie = false;
-
     this.players.forEach(player => {
       if (player.votesReceived > maxVotes) {
         maxVotes = player.votesReceived;
-        votedOut = player;
-        tie = false;
-      } else if (player.votesReceived === maxVotes && maxVotes > 0) {
-        tie = true;
       }
     });
 
+    // Collect all players tied at the max vote count
+    const topPlayers = maxVotes > 0
+      ? this.players.filter(p => p.votesReceived === maxVotes)
+      : [];
+
+    const tie = topPlayers.length > 1;
+
+    // On a tie, randomly pick one of the tied players to eliminate
+    const votedOut = topPlayers.length > 0
+      ? topPlayers[Math.floor(Math.random() * topPlayers.length)]
+      : null;
+
     const impostor = this.players.find(p => p.id === this.impostorId);
     const impostorCaught = votedOut && votedOut.id === this.impostorId;
-    const detectivesWin = impostorCaught && !tie;
+    const detectivesWin = !!impostorCaught;
 
     return {
-      votedOut: votedOut ? { id: votedOut.id, name: votedOut.name } : null,
+      votedOut: votedOut ? { id: votedOut.id, name: votedOut.name, profilePicIndex: votedOut.profilePicIndex, avatar: votedOut.avatar } : null,
       tie,
+      tiedPlayers: tie ? topPlayers.map(p => ({ id: p.id, name: p.name, profilePicIndex: p.profilePicIndex, avatar: p.avatar })) : [],
       impostorCaught,
       detectivesWin,
-      impostor: { id: impostor.id, name: impostor.name },
+      impostor: { id: impostor.id, name: impostor.name, profilePicIndex: impostor.profilePicIndex, avatar: impostor.avatar },
       votes: this.votes,
       voteDetails: this.players.map(p => ({
         id: p.id,
         name: p.name,
+        profilePicIndex: p.profilePicIndex,
+        avatar: p.avatar,
         votedFor: p.vote,
         votesReceived: p.votesReceived
       }))
