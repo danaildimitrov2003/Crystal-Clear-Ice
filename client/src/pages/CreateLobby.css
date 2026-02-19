@@ -1,7 +1,213 @@
 .create-page {
   align-items: center;
   padding: 20px;
+  animation: pageFadeIn 0.3s ease-out;
 }
+
+.create-content {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: rgba(180, 220, 240, 0.7);
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 10px;
+  align-self: flex-start;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  color: rgba(80, 220, 240, 0.9);
+  transform: translateX(-3px);
+}
+
+.create-title {
+  font-family: var(--font-heading);
+  text-align: center;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  color: rgba(200, 240, 255, 0.92);
+}
+
+/* ─── Ice Tablet Form Card ─── */
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background: rgba(4, 15, 26, 0.60);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(160, 210, 235, 0.75);
+}
+
+/* Override input for create form — underline only */
+.create-form .input {
+  padding: 12px 4px 8px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0;
+  background: transparent;
+  font-size: 1.05rem;
+  color: var(--text-light);
+}
+
+.create-form .input:focus {
+  border-bottom-color: rgba(80, 220, 240, 0.7);
+  box-shadow: 0 2px 0 rgba(80, 220, 240, 0.3);
+  background: transparent;
+}
+
+.password-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.password-row .input {
+  flex: 1;
+}
+
+.lock-toggle {
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(200, 235, 250, 0.8);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lock-toggle:hover {
+  background: rgba(80, 220, 240, 0.1);
+  border-color: rgba(80, 220, 240, 0.4);
+  box-shadow: 0 0 14px rgba(80, 220, 240, 0.2);
+}
+
+.lock-toggle.active {
+  background: rgba(26, 184, 212, 0.2);
+  border-color: rgba(80, 220, 240, 0.55);
+  box-shadow: 0 0 16px rgba(80, 220, 240, 0.3);
+}
+
+/* ─── Glowing Slider ─── */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.slider-label {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 22px;
+  text-align: center;
+  color: rgba(80, 220, 240, 0.9);
+  text-shadow: 0 0 8px rgba(80, 220, 240, 0.5);
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  outline: none;
+  position: relative;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle at 40% 35%, #70eeff, #1ab8d4 60%, #0a7ab0);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 0 0 4px rgba(80, 220, 240, 0.18),
+    0 0 16px rgba(80, 220, 240, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  animation: sliderPulse 2.5s ease-in-out infinite;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow:
+    0 0 0 6px rgba(80, 220, 240, 0.22),
+    0 0 24px rgba(80, 220, 240, 0.65),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle at 40% 35%, #70eeff, #1ab8d4 60%, #0a7ab0);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 0 0 4px rgba(80, 220, 240, 0.18),
+    0 0 16px rgba(80, 220, 240, 0.5);
+  animation: sliderPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes sliderPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(80, 220, 240, 0.14),
+      0 0 14px rgba(80, 220, 240, 0.4),
+      0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 0 6px rgba(80, 220, 240, 0.22),
+      0 0 22px rgba(80, 220, 240, 0.6),
+      0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.create-btn {
+  margin-top: 4px;
+}
+
 
 .create-content {
   width: 100%;

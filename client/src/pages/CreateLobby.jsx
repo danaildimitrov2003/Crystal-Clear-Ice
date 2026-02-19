@@ -29,7 +29,7 @@ export default function CreateLobby() {
   return (
     <div className="create-page page-container">
       <div className="create-content animate-fade-in">
-        <button className="back-btn" onClick={() => navigate('/menu')} aria-label="Back">
+        <button className="back-btn" onClick={() => navigate('/')} aria-label="Back">
           ←
         </button>
 

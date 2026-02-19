@@ -1,41 +1,51 @@
 .menu-page {
   position: relative;
+  animation: pageFadeIn 0.3s ease-out;
 }
 
 .menu-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 60px;
+  gap: 52px;
 }
 
 .menu-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .player-info {
   display: flex;
   align-items: center;
   gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 8px 18px 8px 10px;
+  backdrop-filter: blur(12px);
 }
 
 .player-name {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--text-dark);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(200, 240, 255, 0.9);
 }
 
 .menu-buttons {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   width: 100%;
-  max-width: 250px;
+  max-width: 260px;
 }
 
 .menu-btn {
   width: 100%;
+  padding: 14px 32px;
+  font-size: 0.88rem;
 }

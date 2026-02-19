@@ -275,6 +275,11 @@ export const useGameStore = create((set, get) => ({
     socket.emit('game:skipDiscussion');
   },
 
+  // Vote to skip discussion (democratic — 50% required)
+  voteSkipDiscussion: () => {
+    socket.emit('game:voteSkipDiscussion');
+  },
+
   // Start new round
   startNewRound: () => {
     socket.emit('game:newRound');
@@ -298,6 +303,7 @@ export const useGameStore = create((set, get) => ({
     socket.off('game:actionVoteSubmitted');
     socket.off('game:timerStarted');
     socket.off('game:ended');
+    socket.off('game:skipDiscussionVoteUpdate');
     socket.off('connect');
 
     // On reconnect, re-register our session so the server maps the new
@@ -384,9 +390,17 @@ export const useGameStore = create((set, get) => ({
         gameState: state.gameState ? { 
           ...state.gameState, 
           phase,
-          actionVoteStatus: actionVoteStatus || state.gameState.actionVoteStatus
+          actionVoteStatus: actionVoteStatus || state.gameState.actionVoteStatus,
+          // Reset skip-discussion vote count when phase changes
+          skipDiscussionVoteCount: 0,
+          skipDiscussionNeeded: null
         } : null,
-        voteResults: voteResults || state.voteResults
+        // Clear stale voteResults when a new round starts so the GameOver
+        // animation can't be re-triggered by leftover data.
+        voteResults: phase === 'role_reveal' ? null : (voteResults || state.voteResults),
+        // Clear the displayed timer immediately so no stale seconds bleed
+        // into the next phase before the new game:timerStarted event arrives.
+        timerEndTime: null
       }));
     });
 
@@ -437,6 +451,17 @@ export const useGameStore = create((set, get) => ({
 
     socket.on('game:ended', ({ lobby }) => {
       set({ lobby, gameState: null, voteResults: null });
+    });
+
+    socket.on('game:skipDiscussionVoteUpdate', ({ voteCount, needed, totalHumans }) => {
+      set((state) => ({
+        gameState: state.gameState ? {
+          ...state.gameState,
+          skipDiscussionVoteCount: voteCount,
+          skipDiscussionNeeded: needed,
+          skipDiscussionTotalHumans: totalHumans
+        } : null
+      }));
     });
   },
 

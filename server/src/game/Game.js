@@ -18,8 +18,8 @@ const PHASE_DURATIONS = process.env.DEV_MODE === 'true' ? {
   ROLE_REVEAL: 2000,
   THEME_REVEAL: 6000,
   WORD_REVEAL: 6000,
-  CLUE_SUBMISSION: 15000,
-  DISCUSSION: 3000,
+  CLUE_SUBMISSION: 20000,
+  DISCUSSION: 30000,
   ACTION_CHOICE: 10000,
   VOTING: 15000,
   VOTE_RESULTS: 3000
@@ -27,7 +27,7 @@ const PHASE_DURATIONS = process.env.DEV_MODE === 'true' ? {
   ROLE_REVEAL: 3000,
   THEME_REVEAL: 6000,
   WORD_REVEAL: 6000,
-  CLUE_SUBMISSION: 30000,
+  CLUE_SUBMISSION: 20000,
   DISCUSSION: 30000,
   ACTION_CHOICE: 15000,
   VOTING: 30000,
@@ -57,6 +57,7 @@ class Game {
     this.allCluesHistory = [];
     this.votes = {};
     this.actionVotes = {};
+    this.skipDiscussionVotes = {};
     this.phaseTimer = null;
     this.phaseEndTime = null;
   }
@@ -146,6 +147,7 @@ class Game {
           this.currentPlayerIndex = 0;
           this.clues = [];
           this.votes = {};
+          this.skipDiscussionVotes = {};
           this.players.forEach(p => {
             p.clue = null;
             p.vote = null;
@@ -283,11 +285,14 @@ class Game {
       }
     });
 
+    // Only expose and count human players — bots don't vote in action choice
+    const humanPlayers = this.players.filter(p => !p.isBot);
+
     return {
       continueVotes,
       startVoteVotes,
-      totalPlayers: this.players.length,
-      hasVoted: this.players.map(p => ({
+      totalPlayers: humanPlayers.length,
+      hasVoted: humanPlayers.map(p => ({
         id: p.id,
         name: p.name,
         hasVoted: p.actionVote !== null,
@@ -297,7 +302,10 @@ class Game {
   }
 
   allActionVotesSubmitted() {
-    return this.players.every(p => p.actionVote !== null);
+    // Bots don't participate in action choice — only check human players
+    const humanPlayers = this.players.filter(p => !p.isBot);
+    if (humanPlayers.length === 0) return true;
+    return humanPlayers.every(p => p.actionVote !== null);
   }
 
   getVoteResults() {
@@ -350,6 +358,19 @@ class Game {
 
   allVotesSubmitted() {
     return this.players.every(p => p.vote !== null);
+  }
+
+  voteSkipDiscussion(playerId) {
+    const player = this.players.find(p => p.id === playerId);
+    if (!player) return { success: false, error: 'Player not found' };
+    if (this.phase !== GAME_PHASES.DISCUSSION) return { success: false, error: 'Not in discussion phase' };
+
+    this.skipDiscussionVotes[playerId] = true;
+    const humanPlayers = this.players.filter(p => !p.isBot);
+    const voteCount = Object.keys(this.skipDiscussionVotes).length;
+    const needed = Math.ceil(humanPlayers.length / 2);
+    const shouldSkip = voteCount >= needed;
+    return { success: true, voteCount, needed, totalHumans: humanPlayers.length, shouldSkip };
   }
 
   getState() {
@@ -439,6 +460,7 @@ class Game {
     this.currentPlayerIndex = 0;
     this.clues = [];
     this.votes = {};
+    this.skipDiscussionVotes = {};
 
     this.phase = GAME_PHASES.ROLE_REVEAL;
     this.phaseEndTime = null;

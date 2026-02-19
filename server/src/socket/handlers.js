@@ -8,6 +8,19 @@ function getMinPlayers() {
   return isDevModeEnabled() ? 1 : 3;
 }
 
+// --- Input validation helpers ---
+function sanitizeString(value, maxLength) {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  return trimmed.slice(0, maxLength);
+}
+
+const MAX_NAME_LENGTH = 20;
+const MAX_CLUE_LENGTH = 50;
+const MAX_LOBBY_NAME_LENGTH = 30;
+const MAX_PASSWORD_LENGTH = 50;
+
 function resolveCallback(data, callback) {
   if (typeof data === 'function') return data;
   if (typeof callback === 'function') return callback;
@@ -20,7 +33,12 @@ function setupSocketHandlers(io, gameManager) {
 
     // Player joins with name
     socket.on('player:join', ({ name, isGuest = true, profilePicIndex = 0 }, callback) => {
-      const session = gameManager.createSession(socket.id, name, isGuest, profilePicIndex);
+      const safeName = sanitizeString(name, MAX_NAME_LENGTH);
+      if (!safeName) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Name is required (max 20 characters)' });
+        return;
+      }
+      const session = gameManager.createSession(socket.id, safeName, isGuest, profilePicIndex);
       console.log(`Player joined: ${name} (${session.id})`);
       if (typeof callback === 'function') {
         callback({
@@ -41,12 +59,17 @@ function setupSocketHandlers(io, gameManager) {
         if (typeof callback === 'function') callback({ success: false, error: 'Missing playerId' });
         return;
       }
+      const safeName = sanitizeString(name, MAX_NAME_LENGTH);
+      if (!safeName) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Name is required (max 20 characters)' });
+        return;
+      }
 
       // Build a session that re-uses the original playerId
       const session = {
         id: playerId,
         socketId: socket.id,
-        name,
+        name: safeName,
         isGuest,
         profilePicIndex,
         lobbyId: null,
@@ -69,7 +92,13 @@ function setupSocketHandlers(io, gameManager) {
 
     // Create a new lobby
     socket.on('lobby:create', ({ name, maxPlayers, password }, callback) => {
-      const result = gameManager.createLobby(socket.id, name, maxPlayers, password);
+      const safeName = sanitizeString(name, MAX_LOBBY_NAME_LENGTH);
+      if (!safeName) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Lobby name is required (max 30 characters)' });
+        return;
+      }
+      const safePassword = password ? sanitizeString(password, MAX_PASSWORD_LENGTH) : null;
+      const result = gameManager.createLobby(socket.id, safeName, maxPlayers, safePassword);
       if (result.success) {
         socket.join(result.lobby.id);
         console.log(`Lobby created: ${name} by ${socket.id}`);
@@ -206,6 +235,12 @@ function setupSocketHandlers(io, gameManager) {
           throw new Error('Invalid word data format');
         }
 
+        // Prevent excessively large payloads
+        const serialized = JSON.stringify(wordData);
+        if (serialized.length > 50000) {
+          throw new Error('Word data is too large (max ~50 KB)');
+        }
+
         // Store custom words in lobby and update current words
         lobby.customWords = wordData;
         lobby.currentWords = wordData;
@@ -254,7 +289,12 @@ function setupSocketHandlers(io, gameManager) {
 
     // Submit clue
     socket.on('game:submitClue', ({ clue }, callback) => {
-      const result = gameManager.submitClue(socket.id, clue);
+      const safeClue = sanitizeString(clue, MAX_CLUE_LENGTH);
+      if (!safeClue) {
+        if (typeof callback === 'function') callback({ success: false, error: 'Clue is required (max 50 characters)' });
+        return;
+      }
+      const result = gameManager.submitClue(socket.id, safeClue);
       if (result.success) {
         // Clear the existing phase timer since the player acted before it expired
         const currentGame = gameManager.getGame(result.lobbyId);
@@ -354,10 +394,13 @@ function setupSocketHandlers(io, gameManager) {
       }
     });
 
-    // Skip discussion
+    // Skip discussion (host only)
     socket.on('game:skipDiscussion', () => {
       const session = gameManager.getSession(socket.id);
       if (!session || !session.lobbyId) return;
+
+      const lobby = gameManager.lobbies.get(session.lobbyId);
+      if (!lobby || lobby.hostId !== session.id) return; // host only
 
       const game = gameManager.getGame(session.lobbyId);
       if (!game || game.phase !== GAME_PHASES.DISCUSSION) return;
@@ -367,6 +410,35 @@ function setupSocketHandlers(io, gameManager) {
         io.to(session.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
         startPhaseTimer(io, gameManager, session.lobbyId);
       }
+    });
+
+    // Vote to skip discussion (democratic — 50% of human players advances the phase)
+    socket.on('game:voteSkipDiscussion', (data, callback) => {
+      const cb = resolveCallback(data, callback);
+      const result = gameManager.voteSkipDiscussion(socket.id);
+
+      if (result.success) {
+        io.to(result.lobbyId).emit('game:skipDiscussionVoteUpdate', {
+          voteCount: result.voteCount,
+          needed: result.needed,
+          totalHumans: result.totalHumans
+        });
+
+        if (result.shouldSkip) {
+          const game = gameManager.getGame(result.lobbyId);
+          if (game && game.phaseTimer) {
+            clearTimeout(game.phaseTimer);
+            game.phaseTimer = null;
+          }
+          const newState = gameManager.advanceGamePhase(result.lobbyId);
+          if (newState) {
+            io.to(result.lobbyId).emit('game:phaseChanged', { phase: newState.phase });
+            startPhaseTimer(io, gameManager, result.lobbyId);
+          }
+        }
+      }
+
+      if (cb) cb(result);
     });
 
     // Start new round
@@ -544,7 +616,7 @@ function handleBotActions(io, gameManager, lobbyId, game) {
           io.to(lobbyId).emit('game:clueSubmitted', {
             clues: game.clues,
             currentPlayerIndex: game.currentPlayerIndex,
-            currentPlayerId: game.currentPlayerId
+            currentPlayerId: game.players[game.currentPlayerIndex]?.id
           });
 
           // Check if we need to advance or let next bot play
@@ -559,49 +631,20 @@ function handleBotActions(io, gameManager, lobbyId, game) {
           } else {
             gameManager.advanceGamePhase(lobbyId);
             emitPlayerStates(io, gameManager, lobbyId);
-            handleBotActions(io, gameManager, lobbyId, game);
+            startPhaseTimer(io, gameManager, lobbyId);
+            const freshGame = gameManager.getGame(lobbyId);
+            handleBotActions(io, gameManager, lobbyId, freshGame);
           }
         }
       }, 2000);
     }
   }
 
-  // Handle action choice phase
-  if (game.phase === GAME_PHASES.ACTION_CHOICE) {
-    lobby.players.forEach(player => {
-      if (gameManager.isBot(player.id) && !player.actionVote) {
-        const bot = gameManager.getBot(player.id);
-        
-        setTimeout(() => {
-          // Bots randomly choose between continue and start_vote
-          const action = Math.random() > 0.5 ? 'continue' : 'start_vote';
-          const result = gameManager.submitActionVote(player.id, action);
-          
-          if (result.success) {
-            io.to(lobbyId).emit('game:actionVoteSubmitted', {
-              actionVoteStatus: result.gameState.actionVoteStatus
-            });
-
-            if (result.allVoted) {
-              const newState = gameManager.advanceGamePhase(lobbyId);
-              if (newState) {
-                io.to(lobbyId).emit('game:phaseChanged', { phase: newState.phase });
-                emitPlayerStates(io, gameManager, lobbyId);
-                startPhaseTimer(io, gameManager, lobbyId);
-                const updatedGame = gameManager.getGame(lobbyId);
-                handleBotActions(io, gameManager, lobbyId, updatedGame);
-              }
-            }
-          }
-        }, 2000);
-      }
-    });
-  }
-
-  // Handle voting phase
+  // Handle voting phase — use game.players so we can read the actual vote
+  // value, and use p.vote !== null instead of the non-existent p.hasVoted.
   if (game.phase === GAME_PHASES.VOTING) {
-    lobby.players.forEach(player => {
-      if (gameManager.isBot(player.id) && !player.vote) {
+    game.players.forEach(player => {
+      if (gameManager.isBot(player.id) && player.vote === null) {
         const bot = gameManager.getBot(player.id);
         
         setTimeout(() => {
@@ -611,7 +654,7 @@ function handleBotActions(io, gameManager, lobbyId, game) {
             
             if (result.success) {
               io.to(lobbyId).emit('game:voteSubmitted', {
-                playersVoted: game.players.filter(p => p.hasVoted).map(p => p.id)
+                playersVoted: game.players.filter(p => p.vote !== null).map(p => p.id)
               });
 
               if (game.allVotesSubmitted()) {

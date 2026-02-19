@@ -60,7 +60,7 @@ export default function JoinLobby() {
   return (
     <div className="join-page page-container">
       <div className="join-content animate-fade-in">
-        <button className="back-btn" onClick={() => navigate('/menu')} aria-label="Back">
+        <button className="back-btn" onClick={() => navigate('/')} aria-label="Back">
           ←
         </button>
 

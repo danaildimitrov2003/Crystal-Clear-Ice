@@ -10,16 +10,18 @@ const { setupSocketHandlers } = require('./socket/handlers');
 const app = express();
 const server = http.createServer(app);
 
+const corsOrigin = process.env.NODE_ENV === 'production' 
+  ? process.env.CLIENT_URL 
+  : [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/];
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CLIENT_URL 
-      : [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/],
+    origin: corsOrigin,
     methods: ['GET', 'POST']
   }
 });
 
-app.use(cors());
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
 // Serve static files in production

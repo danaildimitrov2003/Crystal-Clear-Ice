@@ -193,7 +193,7 @@ class GameManager {
     }
 
     const result = game.submitClue(session.id, clue);
-    return { ...result, gameState: game.getState(), lobbyId: session.lobbyId };
+    return { ...result, gameState: game.getPlayerState(session.id), lobbyId: session.lobbyId };
   }
 
   submitVote(socketId, votedForId) {
@@ -212,7 +212,7 @@ class GameManager {
     }
 
     const result = game.submitVote(session.id, votedForId);
-    return { ...result, gameState: game.getState(), lobbyId: session.lobbyId, allVoted: game.allVotesSubmitted() };
+    return { ...result, gameState: game.getPlayerState(session.id), lobbyId: session.lobbyId, allVoted: game.allVotesSubmitted() };
   }
 
   submitActionVote(socketId, action) {
@@ -231,13 +231,26 @@ class GameManager {
     }
 
     const result = game.submitActionVote(session.id, action);
-    return { ...result, gameState: game.getState(), lobbyId: session.lobbyId, allVoted: game.allActionVotesSubmitted() };
+    return { ...result, gameState: game.getPlayerState(session.id), lobbyId: session.lobbyId, allVoted: game.allActionVotesSubmitted() };
   }
 
   getVoteResults(lobbyId) {
     const game = this.getGame(lobbyId);
     if (!game) return null;
     return game.getVoteResults();
+  }
+
+  voteSkipDiscussion(socketId) {
+    const session = this.getSession(socketId);
+    if (!session || !session.lobbyId) {
+      return { success: false, error: 'Not in a game' };
+    }
+    const game = this.getGame(session.lobbyId);
+    if (!game) {
+      return { success: false, error: 'Game not found' };
+    }
+    const result = game.voteSkipDiscussion(session.id);
+    return { ...result, lobbyId: session.lobbyId };
   }
 
   getPlayerGameState(socketId) {
@@ -255,6 +268,16 @@ class GameManager {
     const lobby = this.lobbies.get(lobbyId);
     
     if (!lobby) return null;
+
+    // Clear any running phase timer BEFORE deleting the old game.
+    // Without this, a stale setTimeout can fire after the delete and
+    // call advanceGamePhase on the brand-new game, skipping its phases
+    // and emitting spurious game:phaseChanged / voteResults events that
+    // trigger the infinite impostor-reveal loop on the client.
+    if (game && game.phaseTimer) {
+      clearTimeout(game.phaseTimer);
+      game.phaseTimer = null;
+    }
     
     // Delete the old game and create a brand new one with fresh state
     this.games.delete(game.id);

@@ -146,6 +146,12 @@ export default function GameOver({ voteResults, gameState, player }) {
   /* ─── Stage sequencer ─── */
   useEffect(() => {
     if (!voteResults) return;
+    // Reset animation state before scheduling new stages so that if
+    // voteResults is replaced (e.g. spurious duplicate event) the
+    // reveal starts cleanly from the beginning instead of looping.
+    setStage(0);
+    setSlotName('');
+    setSlotDone(false);
     const timers = [];
     const q = (fn, delay) => timers.push(setTimeout(fn, delay));
 

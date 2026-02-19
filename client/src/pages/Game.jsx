@@ -69,6 +69,8 @@ export default function Game() {
           <Discussion 
             clues={gameState.clues}
             timeLeft={timeLeft}
+            gameState={gameState}
+            player={player}
           />
         );
 

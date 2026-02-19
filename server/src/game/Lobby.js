@@ -41,6 +41,7 @@ class Lobby {
       avatar: player.avatar || null,
       profilePicIndex: player.profilePicIndex,
       isHost: player.id === this.hostId,
+      isBot: !!player.isBot,
       isReady: false
     });
 

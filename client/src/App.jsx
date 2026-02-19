@@ -10,14 +10,9 @@ function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="ice-particles" aria-hidden="true">
-        <div className="ice-shard" />
-        <div className="ice-shard" />
-        <div className="ice-shard" />
-        <div className="ice-shard" />
-        <div className="ice-shard" />
-        <div className="ice-shard" />
-        <div className="ice-shard" />
-        <div className="ice-shard" />
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div key={i} className="ice-shard" />
+        ))}
       </div>
       <Routes>
         <Route path="/" element={<Home />} />
